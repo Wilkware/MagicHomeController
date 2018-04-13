@@ -123,7 +123,7 @@ class MagicHomeControl extends IPSModule
 
     // Debug to Loging
  		if ($log) {
-		  IPS_LogMessage($this->moduleName,"ApplyChanges: IP=".$tcpIP.", RGB=".$$rgbID.", LOG=".(int)$LOG);
+		  IPS_LogMessage($this->moduleName,"ApplyChanges: IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log);
     }
 
     // IP Check
