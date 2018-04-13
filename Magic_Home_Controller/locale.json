@@ -1,0 +1,11 @@
+{
+  "translations": {
+    "de": {
+      "WiFi Controller IP:": "WiFi Controller IP:",
+      "RGB pin assignment:": "RGB Pin Belegung:",
+      "Advanced settings:" : "Erweiterte Einstellungen:",
+      "Output logging info": "Meldungen im Log",
+      "WiFi Controller IP im falschen Format (Bsp: 127.0.0.1 - kein HTTP://)": "Wrong WiFi controller IP format (e.g. 127.0.0.1 - no HTTP://)"
+    }
+  }
+}

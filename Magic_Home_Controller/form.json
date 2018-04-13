@@ -1,0 +1,16 @@
+{
+  "elements":
+  [
+    {"type": "ValidationTextBox", "name": "TCPIP", "caption": "WiFi Controller IP:"},
+    {"type": "Select", "name": "RGB", "caption": "RGB pin assignment:",
+      "options": [
+        {"label": "GRB", "value": "012"},
+        {"label": "BRG", "value": "210"}]},
+    {"type": "Label", "label": "Advanced settings:"},
+    {"type": "CheckBox", "name": "LOG", "caption": "Output logging info"}
+  ],
+  "status":
+  [
+    {"code": 201, "icon": "error", "caption": "Wrong WiFi controller IP format (e.g. 127.0.0.1 - no HTTP://)" }
+  ]
+}
