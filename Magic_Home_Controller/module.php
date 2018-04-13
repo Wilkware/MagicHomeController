@@ -69,8 +69,8 @@ class MagicHomeControl extends IPSModule
     $this->RegisterPropertyBoolean("LOG", false);
 
     // Variablen Profile einrichten
-    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeGRB", "Bulb", "", "", 0, 0, 0, 0, $assoGRB);
-    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $assoBRG);
+    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeGRB", "Bulb", "", "", 0, 0, 0, 0, $this->assoGRB);
+    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $this->assoBRG);
 
     // Variablen erzeugen
     $varID = $this->RegisterVariableBoolean("Power", "Aktiv");
