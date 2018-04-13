@@ -76,7 +76,7 @@ class MagicHomeControl extends IPSModule
     $varID = $this->RegisterVariableBoolean("Power", "Aktiv", "~Switch", 0);
     $this->EnableAction("Power"); 
     $varID = $this->RegisterVariableInteger("Color", "Farbe", "~HexColor", 1);
-    IPS_SetIcon($varID, "Paintbrush"")
+    IPS_SetIcon($varID, "Paintbrush");
     $this->EnableAction("Color"); 
     $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit", "~Intensity.100", 2);
     $this->EnableAction("Speed"); 
