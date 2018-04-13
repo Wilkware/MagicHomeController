@@ -64,7 +64,7 @@ Meldungen im Log   | Ausgabe von Debug-Meldungen im Log
 ### 5. Statusvariablen und Profile
 
 Ident         | Name                | Typ       |  Profil                      | Beschreibung
---------------|-------------------- | --------- | --------------------------------------------------------------------------------------
+------------- | ------------------- | --------- | ---------------------------- | -------------------------------------------------------
 Brightness    | Helligkeit          | Integer   | ~Intensity.100               | Helligkeitswert von 0 bis 100%
 Color         | Farbe               | Integer   | ~HexColor                    | Farbwert
 Mode          | Modus               | Integer   | MHC.ModeGRB oder MHC.ModeBRG | Manueller Farbmodus oder vordefinierter Funktionsmodus
@@ -77,16 +77,16 @@ Man kann die Statusvariaben direkt im WebFront verlinken.
 
 ### 7. PHP-Befehlsreferenz
 
-`void MHC_SetBrightness(int $InstanzID, int $Brightness);` 
+`void MHC_SetBrightness(int $InstanzID, int $Brightness);`  
 Setzt die Helligkeit auf $Brightness. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_SetColor(int $InstanzID, int $Color);` 
+`void MHC_SetColor(int $InstanzID, int $Color);`  
 Setzt den Farbwert auf $Color. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_SetMode(int $InstanzID, int $Mode);` 
+`void MHC_SetMode(int $InstanzID, int $Mode);`  
 Setzt den Anzeigemodus auf auf $Mode. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_Power(int $InstanzID, bool $Power);` 
+`void MHC_Power(int $InstanzID, bool $Power);`  
 Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
 
 ### 8. Changelog
