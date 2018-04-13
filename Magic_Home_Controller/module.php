@@ -39,9 +39,9 @@ class MagicHomeControl extends IPSModule
     array(41, "Violett pulsierend", "", 0xFF00FF),
     array(42, "Türkis pulsierend", "", 0x00FFFF),
     array(43, "Gelb pulsierend", "", 0xFFFF00),
-    array(44, "Rot Grün pulsierend", "", 0xF0F000),
+    array(44, "Weiss pulsierend", "", 0xFFFFFF)
     array(45, "Rot Blau pulsierend", "", 0xF000F0),
-    array(46, "Grün Blau pulsierend", "", 0x00F0F0),
+    array(46, "Rot Grün pulsierend", "", 0xF0F000),
     array(47, "7-stufiger Farbwechsel", "", 0xA0A0A0),	
     array(48, "7-stufig blitzend", "", 0xA0A0A0),
     array(49, "Rot blitzend", "", 0xFF0000),
@@ -174,7 +174,7 @@ class MagicHomeControl extends IPSModule
 				IPS_SetDisabled($this->GetIDForIdent("Brightness"),$value);
 				SetValue($this->GetIDForIdent($ident), $value);
 				// Manual mode. 
-				if ($Value == 0) {
+				if ($value == 0) {
 					$this->SendColor();
         }
 				// Functional mode
@@ -403,10 +403,13 @@ class MagicHomeControl extends IPSModule
     // map rgb channel
     $channel = $this->ReadPropertyString("RGB");
     $index = (int)$channel[0];
+    $this->SendDebug("SendColor", "0 -> $index", 0);
 		$data[1] = floor($rgb[$index]);
     $index = (int)$channel[1];
+    $this->SendDebug("SendColor", "1 -> $index", 0);
 		$data[2] = floor($rgb[$index]);
     $index = (int)$channel[2];
+    $this->SendDebug("SendColor", "2 -> $index", 0);
 		$data[3] = floor($rgb[$index]);
     
     // send data
