@@ -119,8 +119,8 @@ class MagicHomeControl extends IPSModule
     $tcpIP  = $this->ReadPropertyString("TCPIP");
     $rgbID  = $this->ReadPropertyString("RGB");
     $log    = $this->ReadPropertyBoolean("LOG");
-    $this->SendDebug("ApplyChanges", "IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log, 0);
 
+    $this->SendDebug("ApplyChanges", "IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log, 0);
     // Debug to Loging
  		if ($log) {
 		  IPS_LogMessage($this->moduleName,"ApplyChanges: IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log);
