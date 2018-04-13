@@ -73,25 +73,17 @@ class MagicHomeControl extends IPSModule
     $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $this->assoBRG);
 
     // Variablen erzeugen
-    $varID = $this->RegisterVariableBoolean("Power", "Aktiv");
-    IPS_SetVariableCustomProfile($varID,"~Switch");
+    $varID = $this->RegisterVariableBoolean("Power", "Aktiv", "~Switch", 0);
     $this->EnableAction("Power"); 
-    
-    $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit");
-    IPS_SetVariableCustomProfile($varID,"~Intensity.100");
-    $this->EnableAction("Speed"); 
-    
-    $varID = $this->RegisterVariableInteger("Mode", "Modus");
-    IPS_SetVariableCustomProfile($varID,"MHC.ModeGRB");
-    $this->EnableAction("Mode"); 
-    
-    $varID = $this->RegisterVariableInteger("Color", "Farbe");
-    IPS_SetVariableCustomProfile($varID,"~HexColor");
+    $varID = $this->RegisterVariableInteger("Color", "Farbe", "~HexColor", 1);
+    IPS_SetIcon($varID, "Paintbrush"")
     $this->EnableAction("Color"); 
-    
-    $varID = $this->RegisterVariableInteger("Brightness", "Helligkeit");
-    IPS_SetVariableCustomProfile($varID,"~Intensity.100");
+    $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit", "~Intensity.100", 2);
+    $this->EnableAction("Speed"); 
+    $varID = $this->RegisterVariableInteger("Brightness", "Helligkeit", "~Intensity.100", 3);
     $this->EnableAction("Brightness"); 
+    $varID = $this->RegisterVariableInteger("Mode", "Modus", "MHC.ModeGRB", 4);
+    $this->EnableAction("Mode"); 
   }
 
   /**
@@ -157,7 +149,7 @@ class MagicHomeControl extends IPSModule
     	IPS_LogMessage($this->moduleName,"RequestAction: ($ident,$value)");
     }
 	 	 
-    switch($Ident) {
+    switch($ident) {
       // Switch Power On/Off
       case "Power":
 				$on   = array(0x71,0x23,0x0f);
