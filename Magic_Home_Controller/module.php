@@ -39,7 +39,7 @@ class MagicHomeControl extends IPSModule
     array(41, "Violett pulsierend", "", 0xFF00FF),
     array(42, "Türkis pulsierend", "", 0x00FFFF),
     array(43, "Gelb pulsierend", "", 0xFFFF00),
-    array(44, "Weiss pulsierend", "", 0xFFFFFF)
+    array(44, "Weiss pulsierend", "", 0xFFFFFF),
     array(45, "Rot Blau pulsierend", "", 0xF000F0),
     array(46, "Rot Grün pulsierend", "", 0xF0F000),
     array(47, "7-stufiger Farbwechsel", "", 0xA0A0A0),	
