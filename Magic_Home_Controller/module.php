@@ -410,11 +410,14 @@ class MagicHomeControl extends IPSModule
 
     // map rgb channel
     $channel = $this->ReadPropertyString("RGB");
+    $index = (int)$channel[0];
+		$data[1] = floor($rgb[$index]);
+    $index = (int)$channel[1];
+		$data[2] = floor($rgb[$index]);
+    $index = (int)$channel[2];
+		$data[3] = floor($rgb[$index]);
     
-		$data[1] = floor($rgb[(int)$channel[0]);
-		$data[2] = floor($rgb[(int)$channel[1]);
-		$data[3] = floor($rgb[(int)$channel[2]);
-    
+    // send data
 		$this->SendData($data);
 	}
 	
