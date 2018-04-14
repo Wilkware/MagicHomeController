@@ -193,6 +193,54 @@ class MagicHomeControl extends IPSModule
 	}
   
   /**
+   * This function will be available automatically after the module is imported with the module control.
+   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+   *
+   * MHC_SetBrightness(int $InstanzID, int $Brightness);
+   *
+   * @access public
+   */
+  public function SetBrightness(int $brightness) {
+    this->RequestAction("Brightness", $brightness);
+  }`  
+
+  /**
+   * This function will be available automatically after the module is imported with the module control.
+   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+   *
+   * MHC_SetColor(int $InstanzID, int $Color);`    
+   *
+   * @access public
+   */
+  public function SetColor(int $color) {
+    this->RequestAction("Color", $color);
+  }`  
+
+  /**
+   * This function will be available automatically after the module is imported with the module control.
+   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+   *
+   * MHC_SetMode(int $InstanzID, int $Mode);    
+   *
+   * @access public
+   */
+  public function SetMode(int $mode) {
+    this->RequestAction("Mode", $mode);
+  }`  
+
+  /**
+   * This function will be available automatically after the module is imported with the module control.
+   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+   *
+   * MHC_Power(int $InstanzID, bool $Power);    
+   *
+   * @access public
+   */
+  public function SetPower(bool $power) {
+    this->RequestAction("Power", $power);
+  }`  
+  
+  /**
    * Create the profile for the given associations.
    *
    * @access protected
