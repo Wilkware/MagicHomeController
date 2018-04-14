@@ -201,7 +201,7 @@ class MagicHomeControl extends IPSModule
    * @access public
    */
   public function SetBrightness(int $brightness) {
-    this->RequestAction("Brightness", $brightness);
+    $this->RequestAction("Brightness", $brightness);
   }`  
 
   /**
@@ -213,7 +213,7 @@ class MagicHomeControl extends IPSModule
    * @access public
    */
   public function SetColor(int $color) {
-    this->RequestAction("Color", $color);
+    $this->RequestAction("Color", $color);
   }`  
 
   /**
@@ -225,7 +225,7 @@ class MagicHomeControl extends IPSModule
    * @access public
    */
   public function SetMode(int $mode) {
-    this->RequestAction("Mode", $mode);
+    $this->RequestAction("Mode", $mode);
   }`  
 
   /**
@@ -237,7 +237,7 @@ class MagicHomeControl extends IPSModule
    * @access public
    */
   public function SetPower(bool $power) {
-    this->RequestAction("Power", $power);
+    $this->RequestAction("Power", $power);
   }`  
   
   /**
