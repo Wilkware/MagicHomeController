@@ -2,6 +2,9 @@
 Thumbs.db
 ehthumbs.db
 
+#PSPad project file
+*.ppr
+
 # Folder config file
 Desktop.ini
 
