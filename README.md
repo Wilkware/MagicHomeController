@@ -1,17 +1,11 @@
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Symcon%20Version-5.0-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.0.20180415-orange.svg)](https://github.com/Wilkware/SymconMHC)
+[![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.1.20190225-orange.svg)](https://github.com/Wilkware/SymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![StyleCI](https://github.styleci.io/repos/129451123/shield?style=flat)](https://github.styleci.io/repos/129451123)
 
 # MHC - Magic Home Controller
 IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Home_.
-
-### Danksagung 
-
-Dieses Modul basiert auf dem Modul von ...
-* _Spoosie_ : Modul _KH\_LEDWiFiController_ (https://github.com/Spoosie/KH_LEDWiFiController) 
-
-Vielen Dank für die hervorragende und tolle Arbeit! 
 
 ### Inhaltverzeichnis
 
@@ -22,19 +16,18 @@ Vielen Dank für die hervorragende und tolle Arbeit!
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
 6. [WebFront](#6-webfront)
 7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
-8. [Changlog] (#8-changelog)
+8. [Versionshistorie] (#8-versionshistorie)
 
 ### 1. Funktionsumfang
 
-Das Modul dient zur Ansteuerung von LED Strpes mittels eines WiFi LED Controllers des Herstellers Magic Home.
+Das Modul dient zur Ansteuerung von LED Stripes mittels eines WiFi LED Controllers des Herstellers Magic Home.
 Das sind Controller vom Typ LD382 bzw. LD382A.
-
 
 Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 2. Voraussetzungen
 
-- IP-Symcon Version 5.0 
+- ab IP-Symcon Version 5.0
 - Funktioniert wahrscheinlich auch mit der Version 4.4 (nicht getestet).
 
 ### 3. Software-Installation
@@ -59,7 +52,6 @@ Name               | Beschreibung
 WiFi Controller IP | IP-Adresse des Controlers im lokalen WLAN (zb. 192.168.0.10)
 RGB Pin Belegung   | Reihenfolge der Farb-Pins (GRB oder BRG), Standard ist GRB
 Meldungen im Log   | Ausgabe von Debug-Meldungen im Log
-
 
 ### 5. Statusvariablen und Profile
 
@@ -89,14 +81,27 @@ Setzt den Anzeigemodus auf auf $Mode. Die Funktion liefert keinerlei Rückgabewe
 `void MHC_Power(int $InstanzID, bool $Power);`  
 Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
 
-### 8. Changelog
+### 8. Versionshistorie
 
-Version 20180415
+v1.1.20190225
+* _NEU_: Vereinheitlichungen, StyleCI uvm.
+
+v1.0.20180415
 * _NEU_: Initialversion
+
+### Danksagung 
+
+Dieses Modul basiert auf dem Modul von ...
+* _Spoosie_ : Modul _KH\_LEDWiFiController_ (https://github.com/Spoosie/KH_LEDWiFiController) 
+
+Vielen Dank für die hervorragende und tolle Arbeit! 
 
 ### Entwickler
 * Heiko Wilknitz ([@wilkware](https://github.com/wilkware))
 
 ### Spenden
-Die Software ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Entwickler bitte hier:  
+Der Skin ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Autor werden bitte hier:<br />
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
+
+### Lizenz
+[![Licence](https://licensebuttons.net/i/l/by-nc-sa/transparent/00/00/00/88x31-e.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)

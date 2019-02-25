@@ -1,11 +1,11 @@
 {
   "id": "{E3529714-0243-4D6A-A8F1-899EEF818A1F}",
-  "name": "Magic Home Control",
+  "name": "Wifi LED Controler",
   "type": 3,
   "vendor": "Magic Home",
   "aliases":
   [
-    "LED Control", "WiFi LED Control"
+    "LED Wifi Controler", "LED Strips Controler"
   ],
   "parentRequirements": [],
   "childRequirements": [],

@@ -1,58 +1,58 @@
-<?
+<?php
 /**
- * MagicHomeControl ist die Klasse für das IPS-Modul 'SymconMHC'.
- * Erweitert IPSModule
+ * WifiLEDControler ist die Klasse für das IPS-Modul 'SymconMHC'.
+ * Erweitert IPSModule.
  */
-class MagicHomeControl extends IPSModule
+class WifiLEDControler extends IPSModule
 {
   // Modul
-  var $moduleName = "Magic Home Control";
-  // Profil arrays
+  var $moduleName =  'Magic Home Control';
+  // GRB Profil array
   var $assoGRB = array(
-    array(0, "Manuell", "", 0x000000),
-    array(37, "7-stufiger Farbdurchlauf", "", 0x000000),
-    array(38, "Rot pulsierend", "", 0xFF0000),
-    array(39, "Grün pulsierend", "", 0x00FF00),
-    array(40, "Blau pulsierend", "", 0x0000FF),
-    array(41, "Gelb pulsierend", "", 0xFFFF00),
-    array(42, "Türkis pulsierend", "", 0x00FFFF),
-    array(43, "Violett pulsierend", "", 0xFF00FF),
-    array(44, "Rot Grün pulsierend", "", 0xF0F000),
-    array(45, "Rot Blau pulsierend", "", 0xF000F0),
-    array(46, "Grün Blau pulsierend", "", 0x00F0F0),
-    array(47, "7-stufig blitzend", "", 0xA0A0A0),
-    array(48, "Rot blitzend", "", 0xFF0000),
-    array(49, "Grün blitzend", "", 0x00FF00),
-    array(50, "Blau blitzend", "", 0x0000FF),
-    array(51, "Gelb blitzend", "", 0xFFFF00),
-    array(52, "Türkis blitzend", "", 0x00FFFF),
-    array(53, "Violett blitzend", "", 0xFF00FF),
-    array(54, "Weiss blitzend", "", 0xFFFFFF),
-    array(55, "7-stufiger Farbwechsel", "", 0xA0A0A0)
+    array(0, 'Manuell', '', 0x000000),
+    array(37, '7-stufiger Farbdurchlauf', '', 0x000000),
+    array(38, 'Rot pulsierend', '', 0xFF0000),
+    array(39, 'Grün pulsierend', '', 0x00FF00),
+    array(40, 'Blau pulsierend', '', 0x0000FF),
+    array(41, 'Gelb pulsierend', '', 0xFFFF00),
+    array(42, 'Türkis pulsierend', '', 0x00FFFF),
+    array(43, 'Violett pulsierend', '', 0xFF00FF),
+    array(44, 'Rot Grün pulsierend', '', 0xF0F000),
+    array(45, 'Rot Blau pulsierend', '', 0xF000F0),
+    array(46, 'Grün Blau pulsierend', '', 0x00F0F0),
+    array(47, '7-stufig blitzend', '', 0xA0A0A0),
+    array(48, 'Rot blitzend', '', 0xFF0000),
+    array(49, 'Grün blitzend', '', 0x00FF00),
+    array(50, 'Blau blitzend', '', 0x0000FF),
+    array(51, 'Gelb blitzend', '', 0xFFFF00),
+    array(52, 'Türkis blitzend', '', 0x00FFFF),
+    array(53, 'Violett blitzend', '', 0xFF00FF),
+    array(54, 'Weiss blitzend', '', 0xFFFFFF),
+    array(55, '7-stufiger Farbwechsel', '', 0xA0A0A0)
   );
+  // BRG Profil array
   var $assoBRG = array(
-    array(0, "Manuell", "", 0x000000),
-    array(37, "7-stufiger Farbdurchlauf", "", 0x000000),
-    array(38, "Rot pulsierend", "", 0xFF0000),
-    array(39, "Blau pulsierend", "", 0x0000FF),
-    array(40, "Grün pulsierend", "", 0x00FF00),
-    array(41, "Violett pulsierend", "", 0xFF00FF),
-    array(42, "Türkis pulsierend", "", 0x00FFFF),
-    array(43, "Gelb pulsierend", "", 0xFFFF00),
-    array(44, "Weiss pulsierend", "", 0xFFFFFF),
-    array(45, "Rot Blau pulsierend", "", 0xF000F0),
-    array(46, "Rot Grün pulsierend", "", 0xF0F000),
-    array(47, "7-stufiger Farbwechsel", "", 0xA0A0A0),
-    array(48, "7-stufig blitzend", "", 0xA0A0A0),
-    array(49, "Rot blitzend", "", 0xFF0000),
-    array(50, "Blau blitzend", "", 0x0000FF),
-    array(51, "Grün blitzend", "", 0x00FF00),
-    array(52, "Violett blitzend", "", 0xFF00FF),
-    array(53, "Türkis blitzend", "", 0x00FFFF),
-    array(54, "Gelb blitzend", "", 0xFFFF00),
-    array(55, "Weiss blitzend", "", 0xFFFFFF)
+    array(0, 'Manuell', '', 0x000000),
+    array(37, '7-stufiger Farbdurchlauf', '', 0x000000),
+    array(38, 'Rot pulsierend', '', 0xFF0000),
+    array(39, 'Blau pulsierend', '', 0x0000FF),
+    array(40, 'Grün pulsierend', '', 0x00FF00),
+    array(41, 'Violett pulsierend', '', 0xFF00FF),
+    array(42, 'Türkis pulsierend', '', 0x00FFFF),
+    array(43, 'Gelb pulsierend', '', 0xFFFF00),
+    array(44, 'Weiss pulsierend', '', 0xFFFFFF),
+    array(45, 'Rot Blau pulsierend', '', 0xF000F0),
+    array(46, 'Rot Grün pulsierend', '', 0xF0F000),
+    array(47, '7-stufiger Farbwechsel', '', 0xA0A0A0),
+    array(48, '7-stufig blitzend', '', 0xA0A0A0),
+    array(49, 'Rot blitzend', '', 0xFF0000),
+    array(50, 'Blau blitzend', '', 0x0000FF),
+    array(51, 'Grün blitzend', '', 0x00FF00),
+    array(52, 'Violett blitzend', '', 0xFF00FF),
+    array(53, 'Türkis blitzend', '', 0x00FFFF),
+    array(54, 'Gelb blitzend', '', 0xFFFF00),
+    array(55, 'Weiss blitzend', '', 0xFFFFFF)
   );
-
   /**
    * Create.
    *
@@ -62,7 +62,6 @@ class MagicHomeControl extends IPSModule
   {
     // Never delete this line!
     parent::Create();
-
     // Config Variablen
     $this->RegisterPropertyString("TCPIP", "127.0.0.1");
     $this->RegisterPropertyString("RGB", "012");

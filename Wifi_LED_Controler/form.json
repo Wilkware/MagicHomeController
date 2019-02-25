@@ -3,9 +3,9 @@
   [
     {"type": "ValidationTextBox", "name": "TCPIP", "caption": "WiFi Controller IP:"},
     {"type": "Select", "name": "RGB", "caption": "RGB pin assignment:",
-      "options": [
-        {"label": "RGB -> GRB", "value": "012"},
-        {"label": "RGB -> BRG", "value": "021"}]},
+    "options": [
+      {"label": "RGB -> GRB", "value": "012"},
+      {"label": "RGB -> BRG", "value": "021"}]},
     {"type": "Label", "label": "Advanced settings:"},
     {"type": "CheckBox", "name": "LOG", "caption": "Output logging info"}
   ],
