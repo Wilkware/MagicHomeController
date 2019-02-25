@@ -31,7 +31,7 @@ class WifiLEDControler extends IPSModule
       [55, '7-stufiger Farbwechsel', '', 0xA0A0A0]
     ];
     // BRG Profil array
-    private $assoBRG = []
+    private $assoBRG = [
       [0, 'Manuell', '', 0x000000],
       [37, '7-stufiger Farbdurchlauf', '', 0x000000],
       [38, 'Rot pulsierend', '', 0xFF0000],
