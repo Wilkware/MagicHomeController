@@ -242,7 +242,6 @@ class WifiLEDControler extends IPSModule
                     break;
             }
         }
-
         return $name;
     }
 
@@ -286,13 +285,11 @@ class WifiLEDControler extends IPSModule
         IPS_SetVariableProfileIcon($name, $icon);
         IPS_SetVariableProfileText($name, $prefix, $suffix);
         IPS_SetVariableProfileDigits($name, $digits);
-
         if (count($asso) === 0) {
             $minvalue = 0;
             $maxvalue = 0;
         }
         IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
-
         if (count($asso) !== 0) {
             foreach ($asso as $ass) {
                 IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
@@ -306,17 +303,14 @@ class WifiLEDControler extends IPSModule
     protected function RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
     {
         $this->RegisterProfileType($name, IPSVarType::vtFloat);
-
         IPS_SetVariableProfileIcon($name, $icon);
         IPS_SetVariableProfileText($name, $prefix, $suffix);
         IPS_SetVariableProfileDigits($name, $digits);
-
         if (count($asso) === 0) {
             $minvalue = 0;
             $maxvalue = 0;
         }
         IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
-
         if (count($asso) !== 0) {
             foreach ($asso as $ass) {
                 IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
@@ -330,7 +324,6 @@ class WifiLEDControler extends IPSModule
     protected function RegisterProfileString($name, $icon, $prefix, $suffix)
     {
         $this->RegisterProfileType($name, IPSVarType::vtString);
-
         IPS_SetVariableProfileText($name, $prefix, $suffix);
         IPS_SetVariableProfileIcon($name, $icon);
     }
@@ -342,26 +335,25 @@ class WifiLEDControler extends IPSModule
     {
         if ($register == true) {
             switch ($vartype) {
-        case IPSVarType::vtBoolean:
-          $objId = $this->RegisterVariableBoolean($ident, $name, $profile, $position);
-          break;
-        case IPSVarType::vtInteger:
-          $objId = $this->RegisterVariableInteger($ident, $name, $profile, $position);
-          break;
-        case IPSVarType::vtFloat:
-          $objId = $this->RegisterVariableFloat($ident, $name, $profile, $position);
-          break;
-        case IPSVarType::vtString:
-          $objId = $this->RegisterVariableString($ident, $name, $profile, $position);
-          break;
-      }
+              case IPSVarType::vtBoolean:
+                $objId = $this->RegisterVariableBoolean($ident, $name, $profile, $position);
+                break;
+              case IPSVarType::vtInteger:
+                $objId = $this->RegisterVariableInteger($ident, $name, $profile, $position);
+                break;
+              case IPSVarType::vtFloat:
+                $objId = $this->RegisterVariableFloat($ident, $name, $profile, $position);
+                break;
+              case IPSVarType::vtString:
+                $objId = $this->RegisterVariableString($ident, $name, $profile, $position);
+                break;
+            }
         } else {
             $objId = @$this->GetIDForIdent($ident);
             if ($objId > 0) {
                 $this->UnregisterVariable($ident);
             }
         }
-
         return $objId;
     }
 
@@ -373,16 +365,13 @@ class WifiLEDControler extends IPSModule
         $data = [0x61, 0x00, 0x00, 0x0F];
         $mode = GetValue($this->GetIDForIdent('Mode'));
         $speed = 100 - GetValue($this->GetIDForIdent('Speed'));
-
         if ($speed > 100) {
             $speed = 100;
         } elseif ($speed < 1) {
             $speed = 1;
         }
-
         $data[1] = $mode;
         $data[2] = $speed;
-
         $this->SendData($data);
     }
 
@@ -392,20 +381,16 @@ class WifiLEDControler extends IPSModule
     private function SendColor()
     {
         $data = [0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F];
-
         $brightness = GetValue($this->GetIDForIdent('Brightness')) / 100;
         $color = GetValue($this->GetIDForIdent('Color'));
-
         $rgb = [0x00, 0x00, 0x00];
         $rgb[0] = (($color >> 16) & 0xFF); // red
-    $rgb[1] = (($color >> 8) & 0xFF); // green
-    $rgb[2] = ($color & 0xFF); // blue
-
-    // map with brightness
+        $rgb[1] = (($color >> 8) & 0xFF); // green
+        $rgb[2] = ($color & 0xFF); // blue
+        // map with brightness
         $rgb[0] *= $brightness;
         $rgb[1] *= $brightness;
         $rgb[2] *= $brightness;
-
         // map rgb channel
         $channel = $this->ReadPropertyString('RGB');
         $index = (int) $channel[0];
@@ -417,7 +402,6 @@ class WifiLEDControler extends IPSModule
         $index = (int) $channel[2];
         $this->SendDebug('SendColor', "2 -> $index", 0);
         $data[3] = floor($rgb[$index]);
-
         // send data
         $this->SendData($data);
     }
@@ -430,14 +414,12 @@ class WifiLEDControler extends IPSModule
         $path = 'tcp://'.$this->ReadPropertyString('TCPIP');
         $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
         $log = $this->ReadPropertyBoolean('LOG');
-
         // Check Socket
         if (!$socket) {
             $this->SendDebug('SendData', $path." -> $errstr ($errno)", 0);
             if ($log) {
                 IPS_LogMessage($this->moduleName, 'SendData: '.$path." -> $errstr ($errno)");
             }
-
             return;
         } else {
             $this->SendDebug('SendData', "Verbindung aufgebaut '".$path."'", 0);
@@ -445,20 +427,16 @@ class WifiLEDControler extends IPSModule
                 IPS_LogMessage($this->moduleName, "SendData: Verbindung aufgebaut '".$path."'");
             }
         }
-
         $send = '';
         foreach ($values as $value) {
             $send .= chr($value);
             $data[] = $value;
         }
         $check = $this->GetChecksum($values);
-
         $send .= chr($check);
         $data[] = $check;
-
         // send data
         fwrite($socket, $send);
-
         $this->SendDebug('SendData', 'Sende Daten='.implode(',', $data), 0);
         if ($log) {
             IPS_LogMessage($this->moduleName, 'SendData: Sende Daten='.implode(',', $data));
@@ -476,7 +454,6 @@ class WifiLEDControler extends IPSModule
         $checksum = dechex($checksum);
         $checksum = substr($checksum, -2);
         $checksum = hexdec($checksum);
-
         return $checksum;
     }
 }

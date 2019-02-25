@@ -16,7 +16,7 @@ IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Ho
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
 6. [WebFront](#6-webfront)
 7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
-8. [Versionshistorie] (#8-versionshistorie)
+8. [Versionshistorie](#8-versionshistorie)
 
 ### 1. Funktionsumfang
 
@@ -84,7 +84,7 @@ Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei 
 ### 8. Versionshistorie
 
 v1.1.20190225
-* _NEU_: Vereinheitlichungen, StyleCI uvm.
+* _NEU_: Umbenennungen, Vereinheitlichungen, StyleCI uvm.
 
 v1.0.20180415
 * _NEU_: Initialversion
