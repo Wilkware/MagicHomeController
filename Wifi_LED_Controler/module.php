@@ -5,31 +5,31 @@
  */
 class WifiLEDControler extends IPSModule
 {
-  // Modul
-  var $moduleName =  'Magic Home Control';
-  // GRB Profil array
-  var $assoGRB = array(
-    array(0, 'Manuell', '', 0x000000),
-    array(37, '7-stufiger Farbdurchlauf', '', 0x000000),
-    array(38, 'Rot pulsierend', '', 0xFF0000),
-    array(39, 'Grün pulsierend', '', 0x00FF00),
-    array(40, 'Blau pulsierend', '', 0x0000FF),
-    array(41, 'Gelb pulsierend', '', 0xFFFF00),
-    array(42, 'Türkis pulsierend', '', 0x00FFFF),
-    array(43, 'Violett pulsierend', '', 0xFF00FF),
-    array(44, 'Rot Grün pulsierend', '', 0xF0F000),
-    array(45, 'Rot Blau pulsierend', '', 0xF000F0),
-    array(46, 'Grün Blau pulsierend', '', 0x00F0F0),
-    array(47, '7-stufig blitzend', '', 0xA0A0A0),
-    array(48, 'Rot blitzend', '', 0xFF0000),
-    array(49, 'Grün blitzend', '', 0x00FF00),
-    array(50, 'Blau blitzend', '', 0x0000FF),
-    array(51, 'Gelb blitzend', '', 0xFFFF00),
-    array(52, 'Türkis blitzend', '', 0x00FFFF),
-    array(53, 'Violett blitzend', '', 0xFF00FF),
-    array(54, 'Weiss blitzend', '', 0xFFFFFF),
-    array(55, '7-stufiger Farbwechsel', '', 0xA0A0A0)
-  );
+    // Modul
+    var $moduleName = 'Magic Home Control';
+    // GRB Profil array
+    var $assoGRB = [
+      [0, 'Manuell', '', 0x000000],
+      [37, '7-stufiger Farbdurchlauf', '', 0x000000],
+      [38, 'Rot pulsierend', '', 0xFF0000],
+      [39, 'Grün pulsierend', '', 0x00FF00],
+      [40, 'Blau pulsierend', '', 0x0000FF],
+      [41, 'Gelb pulsierend', '', 0xFFFF00],
+      [42, 'Türkis pulsierend', '', 0x00FFFF],
+      [43, 'Violett pulsierend', '', 0xFF00FF],
+      [44, 'Rot Grün pulsierend', '', 0xF0F000],
+      [45, 'Rot Blau pulsierend', '', 0xF000F0],
+      [46, 'Grün Blau pulsierend', '', 0x00F0F0],
+      [47, '7-stufig blitzend', '', 0xA0A0A0],
+      [48, 'Rot blitzend', '', 0xFF0000],
+      [49, 'Grün blitzend', '', 0x00FF00],
+      [50, 'Blau blitzend', '', 0x0000FF],
+      [51, 'Gelb blitzend', '', 0xFFFF00],
+      [52, 'Türkis blitzend', '', 0x00FFFF],
+      [53, 'Violett blitzend', '', 0xFF00FF],
+      [54, 'Weiss blitzend', '', 0xFFFFFF],
+      [55, '7-stufiger Farbwechsel', '', 0xA0A0A0]
+    ];
   // BRG Profil array
   var $assoBRG = array(
     array(0, 'Manuell', '', 0x000000),
