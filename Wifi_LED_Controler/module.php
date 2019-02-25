@@ -28,7 +28,7 @@ class WifiLEDControler extends IPSModule
       [52, 'Türkis blitzend', '', 0x00FFFF],
       [53, 'Violett blitzend', '', 0xFF00FF],
       [54, 'Weiss blitzend', '', 0xFFFFFF],
-      [55, '7-stufiger Farbwechsel', '', 0xA0A0A0]
+      [55, '7-stufiger Farbwechsel', '', 0xA0A0A0],
     ];
     // BRG Profil array
     private $assoBRG = [
@@ -51,7 +51,7 @@ class WifiLEDControler extends IPSModule
       [52, 'Violett blitzend', '', 0xFF00FF],
       [53, 'Türkis blitzend', '', 0x00FFFF],
       [54, 'Gelb blitzend', '', 0xFFFF00],
-      [55, 'Weiss blitzend', '', 0xFFFFFF]
+      [55, 'Weiss blitzend', '', 0xFFFFFF],
     ];
 
     /**
@@ -61,248 +61,242 @@ class WifiLEDControler extends IPSModule
      */
     public function Create()
     {
-      // Never delete this line!
-      parent::Create();
-      // Config Variablen
-      $this->RegisterPropertyString("TCPIP", "127.0.0.1");
-      $this->RegisterPropertyString("RGB", "012");
-      $this->RegisterPropertyBoolean("LOG", false);
-  
-      // Variablen Profile einrichten
-      $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeGRB", "Bulb", "", "", 0, 0, 0, 0, $this->assoGRB);
-      $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $this->assoBRG);
-  
-      // Variablen erzeugen
-      $varID = $this->RegisterVariableBoolean("Power", "Aktiv", "~Switch", 0);
-      $this->EnableAction("Power");
-      $varID = $this->RegisterVariableInteger("Color", "Farbe", "~HexColor", 1);
-      IPS_SetIcon($varID, "Paintbrush");
-      $this->EnableAction("Color");
-      $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit", "~Intensity.100", 2);
-      $this->EnableAction("Speed");
-      $varID = $this->RegisterVariableInteger("Brightness", "Helligkeit", "~Intensity.100", 3);
-      $this->EnableAction("Brightness");
-      $varID = $this->RegisterVariableInteger("Mode", "Modus", "MHC.ModeGRB", 4);
-      $this->EnableAction("Mode");
+        // Never delete this line!
+        parent::Create();
+        // Config Variablen
+        $this->RegisterPropertyString('TCPIP', '127.0.0.1');
+        $this->RegisterPropertyString('RGB', '012');
+        $this->RegisterPropertyBoolean('LOG', false);
+        
+        // Variablen Profile einrichten
+        $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
+        $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
+        
+        // Variablen erzeugen
+        $varID = $this->RegisterVariableBoolean('Power', 'Aktiv', '~Switch', 0);
+        $this->EnableAction('Power');
+        $varID = $this->RegisterVariableInteger('Color', 'Farbe', '~HexColor', 1);
+        IPS_SetIcon($varID, 'Paintbrush');
+        $this->EnableAction('Color');
+        $varID = $this->RegisterVariableInteger('Speed', 'Geschwindigkeit', '~Intensity.100', 2);
+        $this->EnableAction('Speed');
+        $varID = $this->RegisterVariableInteger('Brightness', 'Helligkeit', '~Intensity.100', 3);
+        $this->EnableAction('Brightness');
+        $varID = $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeGRB', 4);
+        $this->EnableAction('Mode');
     }
 
-  /**
-   * Destroy.
-   *
-   * @access public
-   */
-  public function Destroy()
-  {
-      // Never delete this line!
-      parent::Destroy();
-  }
-
-  /**
-   * Apply Configuration Changes.
-   *
-   * @access public
-   */
-  public function ApplyChanges()
-  {
-    // Never delete this line!
-    parent::ApplyChanges();
-
-    // Debug message
-    $tcpIP = $this->ReadPropertyString("TCPIP");
-    $rgbID = $this->ReadPropertyString("RGB");
-    $log = $this->ReadPropertyBoolean("LOG");
-
-    $this->SendDebug("ApplyChanges", "IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log, 0);
-    // Debug to Loging
-    if ($log) {
-      IPS_LogMessage($this->moduleName,"ApplyChanges: IP=".$tcpIP.", RGB=".$rgbID.", LOG=".(int)$log);
-    }
-
-    // IP Check
-    if (filter_var($this->ReadPropertyString("TCPIP"), FILTER_VALIDATE_IP) !== false) {
-      $this->SetStatus(102);
-    }
-    else {
-      $this->SetStatus(201);
-    }
-
-    // Setup variable profil
-    $varID = $this->GetIDForIdent("Mode");
-    if ($rgbID == "012") {
-      IPS_SetVariableCustomProfile($varID, "MHC.ModeGRB");
-    }
-    else {
-      IPS_SetVariableCustomProfile($varID, "MHC.ModeBRG");
-    }
-  }
-
-  /**
-   * Call by visual changes
-   *
-   * @access public
-   */
-  public function RequestAction($ident, $value)
-  {
-    // Debug & Logging
-    $this->SendDebug("RequestAction", "RequestAction: ($ident,$value)", 0);
-    if ($this->ReadPropertyBoolean("LOG")) {
-      IPS_LogMessage($this->moduleName,"RequestAction: ($ident,$value)");
-    }
-
-    switch($ident) {
-      // Switch Power On/Off
-      case "Power":
-        $on = array(0x71,0x23,0x0f);
-        $off = array(0x71,0x24,0x0f);
-        if ($value) {
-          $this->SendData($on);
-        }
-        else {
-          $this->SendData($off);
-        }
-        SetValue($this->GetIDForIdent($ident), $value);
-        break;
-      // Set Speed value
-      case "Speed":
-        SetValue($this->GetIDForIdent($ident), $value);
-        $this->SendFunction();
-        break;
-      // Set Display Mode
-      case "Mode":
-        IPS_SetDisabled($this->GetIDForIdent("Speed"),!$value);
-        IPS_SetDisabled($this->GetIDForIdent("Color"),$value);
-        IPS_SetDisabled($this->GetIDForIdent("Brightness"),$value);
-        SetValue($this->GetIDForIdent($ident), $value);
-        // Manual mode.
-        if ($value == 0) {
-          $this->SendColor();
-        }
-        // Functional mode
-        else {
-          $this->SendFunction();
-        }
-        break;
-      case "Color":
-      case "Brightness":
-        SetValue($this->GetIDForIdent($ident), $value);
-        $this->SendColor();
-        break;
-      default:
-        throw new Exception("Invalid Ident");
-    }
-  }
-
-  /**
-   * This function will be available automatically after the module is imported with the module control.
-   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
-   *
-   * MHC_SetBrightness(int $InstanzID, int $Brightness);
-   *
-   * @access public
-   */
-  public function SetBrightness(int $brightness) {
-    $this->RequestAction("Brightness", $brightness);
-  }
-
-  /**
-   * This function will be available automatically after the module is imported with the module control.
-   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
-   *
-   * MHC_SetColor(int $InstanzID, int $Color);
-   *
-   * @access public
-   */
-  public function SetColor(int $color) {
-    $this->RequestAction("Color", $color);
-  }
-
-  /**
-   * This function will be available automatically after the module is imported with the module control.
-   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
-   *
-   * MHC_SetMode(int $InstanzID, int $Mode);
-   *
-   * @access public
-   */
-  public function SetMode(int $mode) {
-    $this->RequestAction("Mode", $mode);
-  }
-
-  /**
-   * This function will be available automatically after the module is imported with the module control.
-   * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
-   *
-   * MHC_Power(int $InstanzID, bool $Power);
-   *
-   * @access public
-   */
-  public function SetPower(bool $power) {
-    $this->RequestAction("Power", $power);
-  }
-
-  /**
-   * Create the profile for the given associations.
-   *
-   * @access protected
-   */
-  protected function RegisterProfile($vartype, $name, $icon, $prefix = "", $suffix = "", $minvalue = 0, $maxvalue = 0, $stepsize = 0, $digits = 0, $associations = NULL)
-  {
-    if (!IPS_VariableProfileExists($name))
+    /**
+     * Destroy.
+     *
+     * @access public
+     */
+    public function Destroy()
     {
-      switch ($vartype)
-      {
-        case IPSVarType::vtBoolean:
-          $this->RegisterProfileBoolean($name, $icon, $prefix, $suffix, $associations);
-          break;
-        case IPSVarType::vtInteger:
-          $this->RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
-          break;
-        case IPSVarType::vtFloat:
-          $this->RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
-          break;
-        case IPSVarType::vtString:
-          $this->RegisterProfileString($name, $icon);
-          break;
-      }
+          // Never delete this line!
+          parent::Destroy();
     }
-    return $name;
-  }
 
-  /**
-   * RegisterProfileType
-   *
-   * @access protected
-   */
-  protected function RegisterProfileType($name, $type)
-  {
-    if(!IPS_VariableProfileExists($name)) {
-      IPS_CreateVariableProfile($name, $type);
+    /**
+     * Apply Configuration Changes.
+     *
+     * @access public
+     */
+    public function ApplyChanges()
+    {
+        // Never delete this line!
+        parent::ApplyChanges();
+        // Debug message
+        $tcpIP = $this->ReadPropertyString('TCPIP');
+        $rgbID = $this->ReadPropertyString('RGB');
+        $log = $this->ReadPropertyBoolean('LOG');
+        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int)$log, 0);
+        // Debug to Loging
+        if ($log) {
+            IPS_LogMessage($this->moduleName,'ApplyChanges: IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int)$log);
+        }
+        // IP Check
+        if (filter_var($this->ReadPropertyString('TCPIP'), FILTER_VALIDATE_IP) !== false) {
+            $this->SetStatus(102);
+        }
+        else {
+            $this->SetStatus(201);
+        }
+        // Setup variable profil
+        $varID = $this->GetIDForIdent('Mode');
+        if ($rgbID == '012') {
+            IPS_SetVariableCustomProfile($varID, 'MHC.ModeGRB');
+        }
+        else {
+            IPS_SetVariableCustomProfile($varID, 'MHC.ModeBRG');
+        }
     }
-    else {
-      $profile = IPS_GetVariableProfile($name);
-      if($profile['ProfileType'] != $type)
-        throw new Exception("Variable profile type does not match for profile ".$name);
+
+    /**
+     * Call by visual changes
+     *
+     * @access public
+     */
+    public function RequestAction($ident, $value)
+    {
+        // Debug & Logging
+        $this->SendDebug('RequestAction', 'RequestAction: ($ident,$value)', 0);
+        if ($this->ReadPropertyBoolean('LOG')) {
+            IPS_LogMessage($this->moduleName,'RequestAction: ($ident,$value)');
+        }
+    
+        switch($ident) {
+            // Switch Power On/Off
+            case 'Power':
+                $on = array(0x71,0x23,0x0f);
+                $off = array(0x71,0x24,0x0f);
+                if ($value) {
+                    $this->SendData($on);
+                }
+                else {
+                    $this->SendData($off);
+                }
+                SetValue($this->GetIDForIdent($ident), $value);
+                break;
+            // Set Speed value
+            case 'Speed':
+                SetValue($this->GetIDForIdent($ident), $value);
+                $this->SendFunction();
+                break;
+            // Set Display Mode
+            case 'Mode':
+                IPS_SetDisabled($this->GetIDForIdent('Speed'),!$value);
+                IPS_SetDisabled($this->GetIDForIdent('Color'),$value);
+                IPS_SetDisabled($this->GetIDForIdent('Brightness'),$value);
+                SetValue($this->GetIDForIdent($ident), $value);
+                // Manual mode.
+                if ($value == 0) {
+                    $this->SendColor();
+                }
+                // Functional mode
+                else {
+                    $this->SendFunction();
+                }
+                break;
+            case 'Color':
+            case 'Brightness':
+                SetValue($this->GetIDForIdent($ident), $value);
+                $this->SendColor();
+                break;
+            default:
+                throw new Exception('Invalid Ident');
+        }
     }
-  }
 
-  /**
-   * RegisterProfileBoolean
-   *
-   * @access protected
-   */
-  protected function RegisterProfileBoolean($name, $icon, $prefix, $suffix, $asso)
-  {
-    $this->RegisterProfileType($name, IPSVarType::vtBoolean);
-
-    IPS_SetVariableProfileIcon($name, $icon);
-    IPS_SetVariableProfileText($name, $prefix, $suffix);
-
-    if(sizeof($asso) !== 0){
-      foreach($asso as $ass) {
-        IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-      }
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     *
+     * MHC_SetBrightness(int $InstanzID, int $Brightness);
+     *
+     * @access public
+     */
+    public function SetBrightness(int $brightness) {
+        $this->RequestAction('Brightness', $brightness);
     }
-  }
+  
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     *
+     * MHC_SetColor(int $InstanzID, int $Color);
+     *
+     * @access public
+     */
+    public function SetColor(int $color) {
+        $this->RequestAction('Color', $color);
+    }
+  
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     *
+     * MHC_SetMode(int $InstanzID, int $Mode);
+     *
+     * @access public
+     */
+    public function SetMode(int $mode) {
+        $this->RequestAction('Mode', $mode);
+    }
+  
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     *
+     * MHC_Power(int $InstanzID, bool $Power);
+     *
+     * @access public
+     */
+    public function SetPower(bool $power) {
+        $this->RequestAction('Power', $power);
+    }
+
+    /**
+     * Create the profile for the given associations.
+     *
+     * @access protected
+     */
+    protected function RegisterProfile($vartype, $name, $icon, $prefix = "", $suffix = "", $minvalue = 0, $maxvalue = 0, $stepsize = 0, $digits = 0, $associations = NULL)
+    {
+        if (!IPS_VariableProfileExists($name))
+        {
+            switch ($vartype)
+            {
+                case IPSVarType::vtBoolean:
+                    $this->RegisterProfileBoolean($name, $icon, $prefix, $suffix, $associations);
+                    break;
+                case IPSVarType::vtInteger:
+                    $this->RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
+                    break;
+                case IPSVarType::vtFloat:
+                    $this->RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
+                    break;
+                case IPSVarType::vtString:
+                    $this->RegisterProfileString($name, $icon);
+                    break;
+            }
+        }
+        return $name;
+    }
+
+    /**
+     * RegisterProfileType
+     *
+     * @access protected
+     */
+    protected function RegisterProfileType($name, $type)
+    {
+        if(!IPS_VariableProfileExists($name)) {
+            IPS_CreateVariableProfile($name, $type);
+        }
+        else {
+            $profile = IPS_GetVariableProfile($name);
+            if($profile['ProfileType'] != $type)
+                throw new Exception("Variable profile type does not match for profile ".$name);
+        }
+    }
+  
+    /**
+     * RegisterProfileBoolean
+     *
+     * @access protected
+     */
+    protected function RegisterProfileBoolean($name, $icon, $prefix, $suffix, $asso)
+    {
+        $this->RegisterProfileType($name, IPSVarType::vtBoolean);
+        IPS_SetVariableProfileIcon($name, $icon);
+        IPS_SetVariableProfileText($name, $prefix, $suffix);
+        if(sizeof($asso) !== 0){
+            foreach($asso as $ass) {
+                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+            }
+        }
+    }
 
   /**
    * RegisterProfileInteger
