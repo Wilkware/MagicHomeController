@@ -56,8 +56,6 @@ class WifiLEDControler extends IPSModule
 
     /**
      * Create.
-     *
-     * @access public
      */
     public function Create()
     {
@@ -67,11 +65,11 @@ class WifiLEDControler extends IPSModule
         $this->RegisterPropertyString('TCPIP', '127.0.0.1');
         $this->RegisterPropertyString('RGB', '012');
         $this->RegisterPropertyBoolean('LOG', false);
-        
+
         // Variablen Profile einrichten
         $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
         $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
-        
+
         // Variablen erzeugen
         $varID = $this->RegisterVariableBoolean('Power', 'Aktiv', '~Switch', 0);
         $this->EnableAction('Power');
@@ -88,19 +86,15 @@ class WifiLEDControler extends IPSModule
 
     /**
      * Destroy.
-     *
-     * @access public
      */
     public function Destroy()
     {
-          // Never delete this line!
-          parent::Destroy();
+        // Never delete this line!
+        parent::Destroy();
     }
 
     /**
      * Apply Configuration Changes.
-     *
-     * @access public
      */
     public function ApplyChanges()
     {
@@ -110,50 +104,45 @@ class WifiLEDControler extends IPSModule
         $tcpIP = $this->ReadPropertyString('TCPIP');
         $rgbID = $this->ReadPropertyString('RGB');
         $log = $this->ReadPropertyBoolean('LOG');
-        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int)$log, 0);
+        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int) $log, 0);
         // Debug to Loging
         if ($log) {
-            IPS_LogMessage($this->moduleName,'ApplyChanges: IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int)$log);
+            IPS_LogMessage($this->moduleName, 'ApplyChanges: IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int) $log);
         }
         // IP Check
         if (filter_var($this->ReadPropertyString('TCPIP'), FILTER_VALIDATE_IP) !== false) {
             $this->SetStatus(102);
-        }
-        else {
+        } else {
             $this->SetStatus(201);
         }
         // Setup variable profil
         $varID = $this->GetIDForIdent('Mode');
         if ($rgbID == '012') {
             IPS_SetVariableCustomProfile($varID, 'MHC.ModeGRB');
-        }
-        else {
+        } else {
             IPS_SetVariableCustomProfile($varID, 'MHC.ModeBRG');
         }
     }
 
     /**
-     * Call by visual changes
-     *
-     * @access public
+     * Call by visual changes.
      */
     public function RequestAction($ident, $value)
     {
         // Debug & Logging
         $this->SendDebug('RequestAction', 'RequestAction: ($ident,$value)', 0);
         if ($this->ReadPropertyBoolean('LOG')) {
-            IPS_LogMessage($this->moduleName,'RequestAction: ($ident,$value)');
+            IPS_LogMessage($this->moduleName, 'RequestAction: ($ident,$value)');
         }
-    
-        switch($ident) {
+
+        switch ($ident) {
             // Switch Power On/Off
             case 'Power':
-                $on = array(0x71,0x23,0x0f);
-                $off = array(0x71,0x24,0x0f);
+                $on = [0x71, 0x23, 0x0f];
+                $off = [0x71, 0x24, 0x0f];
                 if ($value) {
                     $this->SendData($on);
-                }
-                else {
+                } else {
                     $this->SendData($off);
                 }
                 SetValue($this->GetIDForIdent($ident), $value);
@@ -165,9 +154,9 @@ class WifiLEDControler extends IPSModule
                 break;
             // Set Display Mode
             case 'Mode':
-                IPS_SetDisabled($this->GetIDForIdent('Speed'),!$value);
-                IPS_SetDisabled($this->GetIDForIdent('Color'),$value);
-                IPS_SetDisabled($this->GetIDForIdent('Brightness'),$value);
+                IPS_SetDisabled($this->GetIDForIdent('Speed'), !$value);
+                IPS_SetDisabled($this->GetIDForIdent('Color'), $value);
+                IPS_SetDisabled($this->GetIDForIdent('Brightness'), $value);
                 SetValue($this->GetIDForIdent($ident), $value);
                 // Manual mode.
                 if ($value == 0) {
@@ -190,63 +179,55 @@ class WifiLEDControler extends IPSModule
 
     /**
      * This function will be available automatically after the module is imported with the module control.
-     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
      * MHC_SetBrightness(int $InstanzID, int $Brightness);
-     *
-     * @access public
      */
-    public function SetBrightness(int $brightness) {
+    public function SetBrightness(int $brightness)
+    {
         $this->RequestAction('Brightness', $brightness);
     }
-  
+
     /**
      * This function will be available automatically after the module is imported with the module control.
-     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
      * MHC_SetColor(int $InstanzID, int $Color);
-     *
-     * @access public
      */
-    public function SetColor(int $color) {
+    public function SetColor(int $color)
+    {
         $this->RequestAction('Color', $color);
     }
-  
+
     /**
      * This function will be available automatically after the module is imported with the module control.
-     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
      * MHC_SetMode(int $InstanzID, int $Mode);
-     *
-     * @access public
      */
-    public function SetMode(int $mode) {
+    public function SetMode(int $mode)
+    {
         $this->RequestAction('Mode', $mode);
     }
-  
+
     /**
      * This function will be available automatically after the module is imported with the module control.
-     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
      * MHC_Power(int $InstanzID, bool $Power);
-     *
-     * @access public
      */
-    public function SetPower(bool $power) {
+    public function SetPower(bool $power)
+    {
         $this->RequestAction('Power', $power);
     }
 
     /**
      * Create the profile for the given associations.
-     *
-     * @access protected
      */
-    protected function RegisterProfile($vartype, $name, $icon, $prefix = "", $suffix = "", $minvalue = 0, $maxvalue = 0, $stepsize = 0, $digits = 0, $associations = NULL)
+    protected function RegisterProfile($vartype, $name, $icon, $prefix = '', $suffix = '', $minvalue = 0, $maxvalue = 0, $stepsize = 0, $digits = 0, $associations = null)
     {
-        if (!IPS_VariableProfileExists($name))
-        {
-            switch ($vartype)
-            {
+        if (!IPS_VariableProfileExists($name)) {
+            switch ($vartype) {
                 case IPSVarType::vtBoolean:
                     $this->RegisterProfileBoolean($name, $icon, $prefix, $suffix, $associations);
                     break;
@@ -261,117 +242,106 @@ class WifiLEDControler extends IPSModule
                     break;
             }
         }
+
         return $name;
     }
 
     /**
-     * RegisterProfileType
-     *
-     * @access protected
+     * RegisterProfileType.
      */
     protected function RegisterProfileType($name, $type)
     {
-        if(!IPS_VariableProfileExists($name)) {
+        if (!IPS_VariableProfileExists($name)) {
             IPS_CreateVariableProfile($name, $type);
-        }
-        else {
+        } else {
             $profile = IPS_GetVariableProfile($name);
-            if($profile['ProfileType'] != $type)
-                throw new Exception("Variable profile type does not match for profile ".$name);
+            if ($profile['ProfileType'] != $type) {
+                throw new Exception('Variable profile type does not match for profile '.$name);
+            }
         }
     }
-  
+
     /**
-     * RegisterProfileBoolean
-     *
-     * @access protected
+     * RegisterProfileBoolean.
      */
     protected function RegisterProfileBoolean($name, $icon, $prefix, $suffix, $asso)
     {
         $this->RegisterProfileType($name, IPSVarType::vtBoolean);
         IPS_SetVariableProfileIcon($name, $icon);
         IPS_SetVariableProfileText($name, $prefix, $suffix);
-        if(sizeof($asso) !== 0){
-            foreach($asso as $ass) {
+        if (count($asso) !== 0) {
+            foreach ($asso as $ass) {
                 IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
             }
         }
     }
 
-  /**
-   * RegisterProfileInteger
-   *
-   * @access protected
-   */
-  protected function RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
-  {
-    $this->RegisterProfileType($name, IPSVarType::vtInteger);
+    /**
+     * RegisterProfileInteger.
+     */
+    protected function RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
+    {
+        $this->RegisterProfileType($name, IPSVarType::vtInteger);
 
-    IPS_SetVariableProfileIcon($name, $icon);
-    IPS_SetVariableProfileText($name, $prefix, $suffix);
-    IPS_SetVariableProfileDigits($name, $digits);
+        IPS_SetVariableProfileIcon($name, $icon);
+        IPS_SetVariableProfileText($name, $prefix, $suffix);
+        IPS_SetVariableProfileDigits($name, $digits);
 
-    if(sizeof($asso) === 0){
-      $minvalue = 0;
-      $maxvalue = 0;
+        if (count($asso) === 0) {
+            $minvalue = 0;
+            $maxvalue = 0;
+        }
+        IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
+
+        if (count($asso) !== 0) {
+            foreach ($asso as $ass) {
+                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+            }
+        }
     }
-    IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
 
-    if(sizeof($asso) !== 0){
-      foreach($asso as $ass) {
-        IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-      }
+    /**
+     * RegisterProfileFloat.
+     */
+    protected function RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
+    {
+        $this->RegisterProfileType($name, IPSVarType::vtFloat);
+
+        IPS_SetVariableProfileIcon($name, $icon);
+        IPS_SetVariableProfileText($name, $prefix, $suffix);
+        IPS_SetVariableProfileDigits($name, $digits);
+
+        if (count($asso) === 0) {
+            $minvalue = 0;
+            $maxvalue = 0;
+        }
+        IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
+
+        if (count($asso) !== 0) {
+            foreach ($asso as $ass) {
+                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+            }
+        }
     }
-  }
 
-  /**
-   * RegisterProfileFloat
-   *
-   * @access protected
-   */
-  protected function RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
-  {
-    $this->RegisterProfileType($name, IPSVarType::vtFloat);
+    /**
+     * RegisterProfileString.
+     */
+    protected function RegisterProfileString($name, $icon, $prefix, $suffix)
+    {
+        $this->RegisterProfileType($name, IPSVarType::vtString);
 
-    IPS_SetVariableProfileIcon($name, $icon);
-    IPS_SetVariableProfileText($name, $prefix, $suffix);
-    IPS_SetVariableProfileDigits($name, $digits);
-
-    if(sizeof($asso) === 0){
-      $minvalue = 0;
-      $maxvalue = 0;
+        IPS_SetVariableProfileText($name, $prefix, $suffix);
+        IPS_SetVariableProfileIcon($name, $icon);
     }
-    IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
 
-    if(sizeof($asso) !== 0){
-      foreach($asso as $ass) {
-        IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-      }
-    }
-  }
-
-  /**
-   * RegisterProfileString
-   *
-   * @access protected
-   */
-  protected function RegisterProfileString($name, $icon, $prefix, $suffix)
-  {
-    $this->RegisterProfileType($name, IPSVarType::vtString);
-
-    IPS_SetVariableProfileText($name, $prefix, $suffix);
-    IPS_SetVariableProfileIcon($name, $icon);
-  }
-
-  /**
-   * RegisterVariable
-   *
-   * @access protected
-   */
-  protected function RegisterVariable($vartype, $name, $ident, $profile, $position, $register)
-  {
-    if($register == true) {
-      switch ($vartype) {
+    /**
+     * RegisterVariable.
+     */
+    protected function RegisterVariable($vartype, $name, $ident, $profile, $position, $register)
+    {
+        if ($register == true) {
+            switch ($vartype) {
         case IPSVarType::vtBoolean:
           $objId = $this->RegisterVariableBoolean($ident, $name, $profile, $position);
           break;
@@ -385,140 +355,130 @@ class WifiLEDControler extends IPSModule
           $objId = $this->RegisterVariableString($ident, $name, $profile, $position);
           break;
       }
-    }
-    else {
-      $objId = @$this->GetIDForIdent($ident);
-      if ($objId > 0) {
-        $this->UnregisterVariable($ident);
-      }
-    }
-    return $objId;
-  }
+        } else {
+            $objId = @$this->GetIDForIdent($ident);
+            if ($objId > 0) {
+                $this->UnregisterVariable($ident);
+            }
+        }
 
-
-  /**
-   * Send function data
-   *
-   * @access privat
-   */
-  private function SendFunction()
-  {
-    $data = array(0x61,0x00,0x00,0x0F);
-    $mode = GetValue($this->GetIDForIdent("Mode"));
-    $speed = 100 - GetValue($this->GetIDForIdent("Speed"));
-
-    if($speed > 100) {
-      $speed = 100;
-    }
-    else if($speed < 1) {
-      $speed = 1;
+        return $objId;
     }
 
-    $data[1] = $mode;
-    $data[2] = $speed;
+    /**
+     * Send function data.
+     */
+    private function SendFunction()
+    {
+        $data = [0x61, 0x00, 0x00, 0x0F];
+        $mode = GetValue($this->GetIDForIdent('Mode'));
+        $speed = 100 - GetValue($this->GetIDForIdent('Speed'));
 
-    $this->SendData($data);
-  }
+        if ($speed > 100) {
+            $speed = 100;
+        } elseif ($speed < 1) {
+            $speed = 1;
+        }
 
-  /**
-   * Send color data
-   *
-   * @access privat
-   */
-  private function SendColor()
-  {
-    $data = array(0x31,0x00,0x00,0x00,0x00,0x00,0x0F);
+        $data[1] = $mode;
+        $data[2] = $speed;
 
-    $brightness = GetValue($this->GetIDForIdent("Brightness")) / 100;
-    $color = GetValue($this->GetIDForIdent("Color"));
+        $this->SendData($data);
+    }
 
-    $rgb = array(0x00, 0x00, 0x00);
-    $rgb[0] = (($color >> 16) & 0xFF); // red
+    /**
+     * Send color data.
+     */
+    private function SendColor()
+    {
+        $data = [0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F];
+
+        $brightness = GetValue($this->GetIDForIdent('Brightness')) / 100;
+        $color = GetValue($this->GetIDForIdent('Color'));
+
+        $rgb = [0x00, 0x00, 0x00];
+        $rgb[0] = (($color >> 16) & 0xFF); // red
     $rgb[1] = (($color >> 8) & 0xFF); // green
     $rgb[2] = ($color & 0xFF); // blue
 
     // map with brightness
-    $rgb[0] *= $brightness;
-    $rgb[1] *= $brightness;
-    $rgb[2] *= $brightness;
+        $rgb[0] *= $brightness;
+        $rgb[1] *= $brightness;
+        $rgb[2] *= $brightness;
 
-    // map rgb channel
-    $channel = $this->ReadPropertyString("RGB");
-    $index = (int)$channel[0];
-    $this->SendDebug("SendColor", "0 -> $index", 0);
-    $data[1] = floor($rgb[$index]);
-    $index = (int)$channel[1];
-    $this->SendDebug("SendColor", "1 -> $index", 0);
-    $data[2] = floor($rgb[$index]);
-    $index = (int)$channel[2];
-    $this->SendDebug("SendColor", "2 -> $index", 0);
-    $data[3] = floor($rgb[$index]);
+        // map rgb channel
+        $channel = $this->ReadPropertyString('RGB');
+        $index = (int) $channel[0];
+        $this->SendDebug('SendColor', "0 -> $index", 0);
+        $data[1] = floor($rgb[$index]);
+        $index = (int) $channel[1];
+        $this->SendDebug('SendColor', "1 -> $index", 0);
+        $data[2] = floor($rgb[$index]);
+        $index = (int) $channel[2];
+        $this->SendDebug('SendColor', "2 -> $index", 0);
+        $data[3] = floor($rgb[$index]);
 
-    // send data
-    $this->SendData($data);
-  }
-
-  /**
-   * Send data array to controller
-   *
-   * @access privat
-   */
-  private function SendData($values)
-  {
-    $path = "tcp://".$this->ReadPropertyString("TCPIP");
-    $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
-    $log = $this->ReadPropertyBoolean("LOG");
-
-    // Check Socket
-    if(!$socket) {
-      $this->SendDebug("SendData", $path." -> $errstr ($errno)", 0);
-      if ($log) {
-        IPS_LogMessage($this->moduleName,"SendData: ". $path." -> $errstr ($errno)");
-      }
-      return;
-    }
-    else {
-      $this->SendDebug("SendData", "Verbindung aufgebaut '".$path."'", 0);
-      if ($log) {
-        IPS_LogMessage($this->moduleName,"SendData: Verbindung aufgebaut '".$path."'");
-      }
+        // send data
+        $this->SendData($data);
     }
 
-    $send = "";
-    foreach($values as $value) {
-      $send .= chr($value);
-      $data[] = $value;
+    /**
+     * Send data array to controller.
+     */
+    private function SendData($values)
+    {
+        $path = 'tcp://'.$this->ReadPropertyString('TCPIP');
+        $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
+        $log = $this->ReadPropertyBoolean('LOG');
+
+        // Check Socket
+        if (!$socket) {
+            $this->SendDebug('SendData', $path." -> $errstr ($errno)", 0);
+            if ($log) {
+                IPS_LogMessage($this->moduleName, 'SendData: '.$path." -> $errstr ($errno)");
+            }
+
+            return;
+        } else {
+            $this->SendDebug('SendData', "Verbindung aufgebaut '".$path."'", 0);
+            if ($log) {
+                IPS_LogMessage($this->moduleName, "SendData: Verbindung aufgebaut '".$path."'");
+            }
+        }
+
+        $send = '';
+        foreach ($values as $value) {
+            $send .= chr($value);
+            $data[] = $value;
+        }
+        $check = $this->GetChecksum($values);
+
+        $send .= chr($check);
+        $data[] = $check;
+
+        // send data
+        fwrite($socket, $send);
+
+        $this->SendDebug('SendData', 'Sende Daten='.implode(',', $data), 0);
+        if ($log) {
+            IPS_LogMessage($this->moduleName, 'SendData: Sende Daten='.implode(',', $data));
+        }
+        // close socket
+        fclose($socket);
     }
-    $check = $this->GetChecksum($values);
 
-    $send .= chr($check);
-    $data[] = $check;
+    /**
+     * Calculatue checksum for given data.
+     */
+    private function GetChecksum($values)
+    {
+        $checksum = array_sum($values);
+        $checksum = dechex($checksum);
+        $checksum = substr($checksum, -2);
+        $checksum = hexdec($checksum);
 
-    // send data
-    fwrite($socket, $send);
-
-    $this->SendDebug("SendData", "Sende Daten=".join(",",$data), 0);
-    if ($log) {
-      IPS_LogMessage($this->moduleName,"SendData: Sende Daten=".join(",",$data));
+        return $checksum;
     }
-    // close socket
-    fclose($socket);
-  }
-
-  /**
-   * Calculatue checksum for given data
-   *
-   * @access privat
-   */
-  private function GetChecksum($values)
-  {
-    $checksum = array_sum($values);
-    $checksum = dechex($checksum);
-    $checksum = substr($checksum, -2);
-    $checksum = hexdec($checksum);
-
-    return $checksum;
-  }
 }
 
 /**
@@ -526,10 +486,9 @@ class WifiLEDControler extends IPSModule
  */
 class IPSVarType extends stdClass
 {
-  const vtNone    = -1;
-  const vtBoolean = 0;
-  const vtInteger = 1;
-  const vtFloat   = 2;
-  const vtString  = 3;
+    const vtNone = -1;
+    const vtBoolean = 0;
+    const vtInteger = 1;
+    const vtFloat = 2;
+    const vtString = 3;
 }
-?>
