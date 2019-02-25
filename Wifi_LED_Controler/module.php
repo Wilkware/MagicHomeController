@@ -242,6 +242,7 @@ class WifiLEDControler extends IPSModule
                     break;
             }
         }
+
         return $name;
     }
 
@@ -354,6 +355,7 @@ class WifiLEDControler extends IPSModule
                 $this->UnregisterVariable($ident);
             }
         }
+
         return $objId;
     }
 
@@ -420,6 +422,7 @@ class WifiLEDControler extends IPSModule
             if ($log) {
                 IPS_LogMessage($this->moduleName, 'SendData: '.$path." -> $errstr ($errno)");
             }
+
             return;
         } else {
             $this->SendDebug('SendData', "Verbindung aufgebaut '".$path."'", 0);
@@ -454,6 +457,7 @@ class WifiLEDControler extends IPSModule
         $checksum = dechex($checksum);
         $checksum = substr($checksum, -2);
         $checksum = hexdec($checksum);
+
         return $checksum;
     }
 }
