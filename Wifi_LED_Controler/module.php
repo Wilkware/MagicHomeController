@@ -6,9 +6,9 @@
 class WifiLEDControler extends IPSModule
 {
     // Modul
-    var $moduleName = 'Magic Home Control';
+    private $moduleName = 'Magic Home Control';
     // GRB Profil array
-    var $assoGRB = [
+    private $assoGRB = [
       [0, 'Manuell', '', 0x000000],
       [37, '7-stufiger Farbdurchlauf', '', 0x000000],
       [38, 'Rot pulsierend', '', 0xFF0000],
@@ -30,60 +30,61 @@ class WifiLEDControler extends IPSModule
       [54, 'Weiss blitzend', '', 0xFFFFFF],
       [55, '7-stufiger Farbwechsel', '', 0xA0A0A0]
     ];
-  // BRG Profil array
-  var $assoBRG = array(
-    array(0, 'Manuell', '', 0x000000),
-    array(37, '7-stufiger Farbdurchlauf', '', 0x000000),
-    array(38, 'Rot pulsierend', '', 0xFF0000),
-    array(39, 'Blau pulsierend', '', 0x0000FF),
-    array(40, 'Grün pulsierend', '', 0x00FF00),
-    array(41, 'Violett pulsierend', '', 0xFF00FF),
-    array(42, 'Türkis pulsierend', '', 0x00FFFF),
-    array(43, 'Gelb pulsierend', '', 0xFFFF00),
-    array(44, 'Weiss pulsierend', '', 0xFFFFFF),
-    array(45, 'Rot Blau pulsierend', '', 0xF000F0),
-    array(46, 'Rot Grün pulsierend', '', 0xF0F000),
-    array(47, '7-stufiger Farbwechsel', '', 0xA0A0A0),
-    array(48, '7-stufig blitzend', '', 0xA0A0A0),
-    array(49, 'Rot blitzend', '', 0xFF0000),
-    array(50, 'Blau blitzend', '', 0x0000FF),
-    array(51, 'Grün blitzend', '', 0x00FF00),
-    array(52, 'Violett blitzend', '', 0xFF00FF),
-    array(53, 'Türkis blitzend', '', 0x00FFFF),
-    array(54, 'Gelb blitzend', '', 0xFFFF00),
-    array(55, 'Weiss blitzend', '', 0xFFFFFF)
-  );
-  /**
-   * Create.
-   *
-   * @access public
-   */
-  public function Create()
-  {
-    // Never delete this line!
-    parent::Create();
-    // Config Variablen
-    $this->RegisterPropertyString("TCPIP", "127.0.0.1");
-    $this->RegisterPropertyString("RGB", "012");
-    $this->RegisterPropertyBoolean("LOG", false);
+    // BRG Profil array
+    private $assoBRG = []
+      [0, 'Manuell', '', 0x000000],
+      [37, '7-stufiger Farbdurchlauf', '', 0x000000],
+      [38, 'Rot pulsierend', '', 0xFF0000],
+      [39, 'Blau pulsierend', '', 0x0000FF],
+      [40, 'Grün pulsierend', '', 0x00FF00],
+      [41, 'Violett pulsierend', '', 0xFF00FF],
+      [42, 'Türkis pulsierend', '', 0x00FFFF],
+      [43, 'Gelb pulsierend', '', 0xFFFF00],
+      [44, 'Weiss pulsierend', '', 0xFFFFFF],
+      [45, 'Rot Blau pulsierend', '', 0xF000F0],
+      [46, 'Rot Grün pulsierend', '', 0xF0F000],
+      [47, '7-stufiger Farbwechsel', '', 0xA0A0A0],
+      [48, '7-stufig blitzend', '', 0xA0A0A0],
+      [49, 'Rot blitzend', '', 0xFF0000],
+      [50, 'Blau blitzend', '', 0x0000FF],
+      [51, 'Grün blitzend', '', 0x00FF00],
+      [52, 'Violett blitzend', '', 0xFF00FF],
+      [53, 'Türkis blitzend', '', 0x00FFFF],
+      [54, 'Gelb blitzend', '', 0xFFFF00],
+      [55, 'Weiss blitzend', '', 0xFFFFFF]
+    ];
 
-    // Variablen Profile einrichten
-    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeGRB", "Bulb", "", "", 0, 0, 0, 0, $this->assoGRB);
-    $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $this->assoBRG);
-
-    // Variablen erzeugen
-    $varID = $this->RegisterVariableBoolean("Power", "Aktiv", "~Switch", 0);
-    $this->EnableAction("Power");
-    $varID = $this->RegisterVariableInteger("Color", "Farbe", "~HexColor", 1);
-    IPS_SetIcon($varID, "Paintbrush");
-    $this->EnableAction("Color");
-    $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit", "~Intensity.100", 2);
-    $this->EnableAction("Speed");
-    $varID = $this->RegisterVariableInteger("Brightness", "Helligkeit", "~Intensity.100", 3);
-    $this->EnableAction("Brightness");
-    $varID = $this->RegisterVariableInteger("Mode", "Modus", "MHC.ModeGRB", 4);
-    $this->EnableAction("Mode");
-  }
+    /**
+     * Create.
+     *
+     * @access public
+     */
+    public function Create()
+    {
+      // Never delete this line!
+      parent::Create();
+      // Config Variablen
+      $this->RegisterPropertyString("TCPIP", "127.0.0.1");
+      $this->RegisterPropertyString("RGB", "012");
+      $this->RegisterPropertyBoolean("LOG", false);
+  
+      // Variablen Profile einrichten
+      $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeGRB", "Bulb", "", "", 0, 0, 0, 0, $this->assoGRB);
+      $this->RegisterProfile(IPSVarType::vtInteger, "MHC.ModeBRG", "Bulb", "", "", 0, 0, 0, 0, $this->assoBRG);
+  
+      // Variablen erzeugen
+      $varID = $this->RegisterVariableBoolean("Power", "Aktiv", "~Switch", 0);
+      $this->EnableAction("Power");
+      $varID = $this->RegisterVariableInteger("Color", "Farbe", "~HexColor", 1);
+      IPS_SetIcon($varID, "Paintbrush");
+      $this->EnableAction("Color");
+      $varID = $this->RegisterVariableInteger("Speed", "Geschwindigkeit", "~Intensity.100", 2);
+      $this->EnableAction("Speed");
+      $varID = $this->RegisterVariableInteger("Brightness", "Helligkeit", "~Intensity.100", 3);
+      $this->EnableAction("Brightness");
+      $varID = $this->RegisterVariableInteger("Mode", "Modus", "MHC.ModeGRB", 4);
+      $this->EnableAction("Mode");
+    }
 
   /**
    * Destroy.
