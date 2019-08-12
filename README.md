@@ -32,7 +32,7 @@ Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 3. Installation
 
-* Über den Modul Store das Modul Awido installieren.
+* Über den Modul Store das Modul 'Magic Home Controller' installieren.
 * Alternativ Über das Modul-Control folgende URL hinzufügen.  
 `https://github.com/Wilkware/IPSymconMHC` oder `git://github.com/Wilkware/IPSymconMHC.git`
 
