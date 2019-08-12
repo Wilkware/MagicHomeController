@@ -1,10 +1,10 @@
 <?php
-/**
- * WifiLEDControler ist die Klasse für das IPS-Modul 'SymconMHC'.
- * Erweitert IPSModule.
- */
+
+require_once __DIR__.'/../libs/traits.php';  // Allgemeine Funktionen
+
 class WifiLEDControler extends IPSModule
 {
+    use ProfileHelper, DebugHelper;
     // Modul
     private $moduleName = 'Magic Home Control';
     // GRB Profil array
@@ -64,11 +64,10 @@ class WifiLEDControler extends IPSModule
         // Config Variablen
         $this->RegisterPropertyString('TCPIP', '127.0.0.1');
         $this->RegisterPropertyString('RGB', '012');
-        $this->RegisterPropertyBoolean('LOG', false);
 
         // Variablen Profile einrichten
-        $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
-        $this->RegisterProfile(IPSVarType::vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
+        $this->RegisterProfile(vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
+        $this->RegisterProfile(vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
 
         // Variablen erzeugen
         $varID = $this->RegisterVariableBoolean('Power', 'Aktiv', '~Switch', 0);
@@ -103,12 +102,6 @@ class WifiLEDControler extends IPSModule
         // Debug message
         $tcpIP = $this->ReadPropertyString('TCPIP');
         $rgbID = $this->ReadPropertyString('RGB');
-        $log = $this->ReadPropertyBoolean('LOG');
-        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int) $log, 0);
-        // Debug to Loging
-        if ($log) {
-            IPS_LogMessage($this->moduleName, 'ApplyChanges: IP='.$tcpIP.', RGB='.$rgbID.', LOG='.(int) $log);
-        }
         // IP Check
         if (filter_var($this->ReadPropertyString('TCPIP'), FILTER_VALIDATE_IP) !== false) {
             $this->SetStatus(102);
@@ -122,6 +115,7 @@ class WifiLEDControler extends IPSModule
         } else {
             IPS_SetVariableCustomProfile($varID, 'MHC.ModeBRG');
         }
+        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID, 0);
     }
 
     /**
@@ -129,11 +123,8 @@ class WifiLEDControler extends IPSModule
      */
     public function RequestAction($ident, $value)
     {
-        // Debug & Logging
+        // Debug
         $this->SendDebug('RequestAction', 'RequestAction: ($ident,$value)', 0);
-        if ($this->ReadPropertyBoolean('LOG')) {
-            IPS_LogMessage($this->moduleName, 'RequestAction: ($ident,$value)');
-        }
 
         switch ($ident) {
             // Switch Power On/Off
@@ -214,149 +205,11 @@ class WifiLEDControler extends IPSModule
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * MHC_Power(int $InstanzID, bool $Power);
+     * MHC_SetPower(int $InstanzID, bool $Power);
      */
     public function SetPower(bool $power)
     {
         $this->RequestAction('Power', $power);
-    }
-
-    /**
-     * Create the profile for the given associations.
-     */
-    protected function RegisterProfile($vartype, $name, $icon, $prefix = '', $suffix = '', $minvalue = 0, $maxvalue = 0, $stepsize = 0, $digits = 0, $associations = null)
-    {
-        if (!IPS_VariableProfileExists($name)) {
-            switch ($vartype) {
-                case IPSVarType::vtBoolean:
-                    $this->RegisterProfileBoolean($name, $icon, $prefix, $suffix, $associations);
-                    break;
-                case IPSVarType::vtInteger:
-                    $this->RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
-                    break;
-                case IPSVarType::vtFloat:
-                    $this->RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $stepsize, $digits, $associations);
-                    break;
-                case IPSVarType::vtString:
-                    $this->RegisterProfileString($name, $icon);
-                    break;
-            }
-        }
-
-        return $name;
-    }
-
-    /**
-     * RegisterProfileType.
-     */
-    protected function RegisterProfileType($name, $type)
-    {
-        if (!IPS_VariableProfileExists($name)) {
-            IPS_CreateVariableProfile($name, $type);
-        } else {
-            $profile = IPS_GetVariableProfile($name);
-            if ($profile['ProfileType'] != $type) {
-                throw new Exception('Variable profile type does not match for profile '.$name);
-            }
-        }
-    }
-
-    /**
-     * RegisterProfileBoolean.
-     */
-    protected function RegisterProfileBoolean($name, $icon, $prefix, $suffix, $asso)
-    {
-        $this->RegisterProfileType($name, IPSVarType::vtBoolean);
-        IPS_SetVariableProfileIcon($name, $icon);
-        IPS_SetVariableProfileText($name, $prefix, $suffix);
-        if (count($asso) !== 0) {
-            foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-            }
-        }
-    }
-
-    /**
-     * RegisterProfileInteger.
-     */
-    protected function RegisterProfileInteger($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
-    {
-        $this->RegisterProfileType($name, IPSVarType::vtInteger);
-
-        IPS_SetVariableProfileIcon($name, $icon);
-        IPS_SetVariableProfileText($name, $prefix, $suffix);
-        IPS_SetVariableProfileDigits($name, $digits);
-        if (count($asso) === 0) {
-            $minvalue = 0;
-            $maxvalue = 0;
-        }
-        IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
-        if (count($asso) !== 0) {
-            foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-            }
-        }
-    }
-
-    /**
-     * RegisterProfileFloat.
-     */
-    protected function RegisterProfileFloat($name, $icon, $prefix, $suffix, $minvalue, $maxvalue, $step, $digits, $asso)
-    {
-        $this->RegisterProfileType($name, IPSVarType::vtFloat);
-        IPS_SetVariableProfileIcon($name, $icon);
-        IPS_SetVariableProfileText($name, $prefix, $suffix);
-        IPS_SetVariableProfileDigits($name, $digits);
-        if (count($asso) === 0) {
-            $minvalue = 0;
-            $maxvalue = 0;
-        }
-        IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $step);
-        if (count($asso) !== 0) {
-            foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
-            }
-        }
-    }
-
-    /**
-     * RegisterProfileString.
-     */
-    protected function RegisterProfileString($name, $icon, $prefix, $suffix)
-    {
-        $this->RegisterProfileType($name, IPSVarType::vtString);
-        IPS_SetVariableProfileText($name, $prefix, $suffix);
-        IPS_SetVariableProfileIcon($name, $icon);
-    }
-
-    /**
-     * RegisterVariable.
-     */
-    protected function RegisterVariable($vartype, $name, $ident, $profile, $position, $register)
-    {
-        if ($register == true) {
-            switch ($vartype) {
-              case IPSVarType::vtBoolean:
-                $objId = $this->RegisterVariableBoolean($ident, $name, $profile, $position);
-                break;
-              case IPSVarType::vtInteger:
-                $objId = $this->RegisterVariableInteger($ident, $name, $profile, $position);
-                break;
-              case IPSVarType::vtFloat:
-                $objId = $this->RegisterVariableFloat($ident, $name, $profile, $position);
-                break;
-              case IPSVarType::vtString:
-                $objId = $this->RegisterVariableString($ident, $name, $profile, $position);
-                break;
-            }
-        } else {
-            $objId = @$this->GetIDForIdent($ident);
-            if ($objId > 0) {
-                $this->UnregisterVariable($ident);
-            }
-        }
-
-        return $objId;
     }
 
     /**
@@ -415,20 +268,13 @@ class WifiLEDControler extends IPSModule
     {
         $path = 'tcp://'.$this->ReadPropertyString('TCPIP');
         $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
-        $log = $this->ReadPropertyBoolean('LOG');
         // Check Socket
         if (!$socket) {
             $this->SendDebug('SendData', $path." -> $errstr ($errno)", 0);
-            if ($log) {
-                IPS_LogMessage($this->moduleName, 'SendData: '.$path." -> $errstr ($errno)");
-            }
 
             return;
         } else {
             $this->SendDebug('SendData', "Verbindung aufgebaut '".$path."'", 0);
-            if ($log) {
-                IPS_LogMessage($this->moduleName, "SendData: Verbindung aufgebaut '".$path."'");
-            }
         }
         $send = '';
         foreach ($values as $value) {
@@ -441,9 +287,6 @@ class WifiLEDControler extends IPSModule
         // send data
         fwrite($socket, $send);
         $this->SendDebug('SendData', 'Sende Daten='.implode(',', $data), 0);
-        if ($log) {
-            IPS_LogMessage($this->moduleName, 'SendData: Sende Daten='.implode(',', $data));
-        }
         // close socket
         fclose($socket);
     }
@@ -460,16 +303,4 @@ class WifiLEDControler extends IPSModule
 
         return $checksum;
     }
-}
-
-/**
- * Helper class for IPS variable types.
- */
-class IPSVarType extends stdClass
-{
-    const vtNone = -1;
-    const vtBoolean = 0;
-    const vtInteger = 1;
-    const vtFloat = 2;
-    const vtString = 3;
 }
