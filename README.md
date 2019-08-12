@@ -87,6 +87,7 @@ v1.2.20190812
 
 * _NEU_: Anpassungen für Module Store
 * _NEU_: Vereinheitlichungen, Umstellung auf Libs
+* _FIX_: Fehler in Profilen korriegiert
 
 v1.1.20190225
 
