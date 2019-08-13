@@ -73,7 +73,6 @@ class WifiLEDControler extends IPSModule
         $varID = $this->RegisterVariableBoolean('Power', 'Aktiv', '~Switch', 0);
         $this->EnableAction('Power');
         $varID = $this->RegisterVariableInteger('Color', 'Farbe', '~HexColor', 1);
-        IPS_SetIcon($varID, 'Paintbrush');
         $this->EnableAction('Color');
         $varID = $this->RegisterVariableInteger('Speed', 'Geschwindigkeit', '~Intensity.100', 2);
         $this->EnableAction('Speed');
@@ -109,11 +108,10 @@ class WifiLEDControler extends IPSModule
             $this->SetStatus(201);
         }
         // Setup variable profil
-        $varID = $this->GetIDForIdent('Mode');
         if ($rgbID == '012') {
-            IPS_SetVariableCustomProfile($varID, 'MHC.ModeGRB');
+            $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeGRB', 4);
         } else {
-            IPS_SetVariableCustomProfile($varID, 'MHC.ModeBRG');
+            $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeBRG', 4);
         }
         $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID, 0);
     }
