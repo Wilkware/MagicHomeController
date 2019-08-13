@@ -1,6 +1,6 @@
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.2.201908125-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.2.20190812-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/129451123/shield?style=flat)](https://github.styleci.io/repos/129451123)
 
