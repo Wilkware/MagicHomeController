@@ -1,10 +1,10 @@
+# MHC - Magic Home Controller
+
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)](https://www.symcon.de/produkt/)
 [![Version](https://img.shields.io/badge/Modul%20Version-1.2.20190812-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![StyleCI](https://github.styleci.io/repos/129451123/shield?style=flat)](https://github.styleci.io/repos/129451123)
-
-# MHC - Magic Home Controller
+[![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
 
 IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Home_.
 
@@ -97,7 +97,7 @@ v1.0.20180415
 
 * _NEU_: Initialversion
 
-### Danksagung
+## Danksagung
 
 Dieses Modul basiert auf dem Modul von ...
 
@@ -105,15 +105,16 @@ Dieses Modul basiert auf dem Modul von ...
 
 Vielen Dank für die hervorragende und tolle Arbeit!
 
-### Entwickler
+## Entwickler
 
 * Heiko Wilknitz ([@wilkware](https://github.com/wilkware))
 
-### Spenden
+## Spenden
 
-Die Software ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Entwickler bitte hier:  
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166" target="_blank"><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_LG.gif" border="0" /></a>
+Die Software ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Entwickler bitte hier:
 
-### Lizenz
+[![License](https://img.shields.io/badge/Einfach%20spenden%20mit-PayPal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
+
+## Lizenz
 
 [![Licence](https://licensebuttons.net/i/l/by-nc-sa/transparent/00/00/00/88x31-e.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)

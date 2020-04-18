@@ -1,57 +1,60 @@
 <?php
 
-require_once __DIR__.'/../libs/traits.php';  // Allgemeine Funktionen
+declare(strict_types=1);
+
+require_once __DIR__ . '/../libs/traits.php';  // Allgemeine Funktionen
 
 class WifiLEDControler extends IPSModule
 {
-    use ProfileHelper, DebugHelper;
+    use ProfileHelper;
+    use DebugHelper;
     // Modul
     private $moduleName = 'Magic Home Control';
     // GRB Profil array
     private $assoGRB = [
-      [0, 'Manuell', '', 0x000000],
-      [37, '7-stufiger Farbdurchlauf', '', 0x000000],
-      [38, 'Rot pulsierend', '', 0xFF0000],
-      [39, 'Grün pulsierend', '', 0x00FF00],
-      [40, 'Blau pulsierend', '', 0x0000FF],
-      [41, 'Gelb pulsierend', '', 0xFFFF00],
-      [42, 'Türkis pulsierend', '', 0x00FFFF],
-      [43, 'Violett pulsierend', '', 0xFF00FF],
-      [44, 'Weiss pulsierend', '', 0xFFFFFF],
-      [45, 'Rot Grün pulsierend', '', 0xF0F000],
-      [46, 'Rot Blau pulsierend', '', 0xF000F0],
-      [47, 'Grün Blau pulsierend', '', 0x00F0F0],
-      [48, '7-stufig blitzend', '', 0xA0A0A0],
-      [49, 'Rot blitzend', '', 0xFF0000],
-      [50, 'Grün blitzend', '', 0x00FF00],
-      [51, 'Blau blitzend', '', 0x0000FF],
-      [52, 'Gelb blitzend', '', 0xFFFF00],
-      [53, 'Türkis blitzend', '', 0x00FFFF],
-      [54, 'Violett blitzend', '', 0xFF00FF],
-      [55, 'Weiss blitzend', '', 0xFFFFFF],
+        [0, 'Manuell', '', 0x000000],
+        [37, '7-stufiger Farbdurchlauf', '', 0x000000],
+        [38, 'Rot pulsierend', '', 0xFF0000],
+        [39, 'Grün pulsierend', '', 0x00FF00],
+        [40, 'Blau pulsierend', '', 0x0000FF],
+        [41, 'Gelb pulsierend', '', 0xFFFF00],
+        [42, 'Türkis pulsierend', '', 0x00FFFF],
+        [43, 'Violett pulsierend', '', 0xFF00FF],
+        [44, 'Weiss pulsierend', '', 0xFFFFFF],
+        [45, 'Rot Grün pulsierend', '', 0xF0F000],
+        [46, 'Rot Blau pulsierend', '', 0xF000F0],
+        [47, 'Grün Blau pulsierend', '', 0x00F0F0],
+        [48, '7-stufig blitzend', '', 0xA0A0A0],
+        [49, 'Rot blitzend', '', 0xFF0000],
+        [50, 'Grün blitzend', '', 0x00FF00],
+        [51, 'Blau blitzend', '', 0x0000FF],
+        [52, 'Gelb blitzend', '', 0xFFFF00],
+        [53, 'Türkis blitzend', '', 0x00FFFF],
+        [54, 'Violett blitzend', '', 0xFF00FF],
+        [55, 'Weiss blitzend', '', 0xFFFFFF],
     ];
     // BRG Profil array
     private $assoBRG = [
-      [0, 'Manuell', '', 0x000000],
-      [37, '7-stufiger Farbdurchlauf', '', 0x000000],
-      [38, 'Rot pulsierend', '', 0xFF0000],
-      [39, 'Blau pulsierend', '', 0x0000FF],
-      [40, 'Grün pulsierend', '', 0x00FF00],
-      [41, 'Violett pulsierend', '', 0xFF00FF],
-      [42, 'Türkis pulsierend', '', 0x00FFFF],
-      [43, 'Gelb pulsierend', '', 0xFFFF00],
-      [44, 'Weiss pulsierend', '', 0xFFFFFF],
-      [45, 'Rot Blau pulsierend', '', 0xF000F0],
-      [46, 'Rot Grün pulsierend', '', 0xF0F000],
-      [47, 'Grün Blau pulsierend', '', 0x00F0F0],
-      [48, '7-stufig blitzend', '', 0xA0A0A0],
-      [49, 'Rot blitzend', '', 0xFF0000],
-      [50, 'Blau blitzend', '', 0x0000FF],
-      [51, 'Grün blitzend', '', 0x00FF00],
-      [52, 'Violett blitzend', '', 0xFF00FF],
-      [53, 'Türkis blitzend', '', 0x00FFFF],
-      [54, 'Gelb blitzend', '', 0xFFFF00],
-      [55, 'Weiss blitzend', '', 0xFFFFFF],
+        [0, 'Manuell', '', 0x000000],
+        [37, '7-stufiger Farbdurchlauf', '', 0x000000],
+        [38, 'Rot pulsierend', '', 0xFF0000],
+        [39, 'Blau pulsierend', '', 0x0000FF],
+        [40, 'Grün pulsierend', '', 0x00FF00],
+        [41, 'Violett pulsierend', '', 0xFF00FF],
+        [42, 'Türkis pulsierend', '', 0x00FFFF],
+        [43, 'Gelb pulsierend', '', 0xFFFF00],
+        [44, 'Weiss pulsierend', '', 0xFFFFFF],
+        [45, 'Rot Blau pulsierend', '', 0xF000F0],
+        [46, 'Rot Grün pulsierend', '', 0xF0F000],
+        [47, 'Grün Blau pulsierend', '', 0x00F0F0],
+        [48, '7-stufig blitzend', '', 0xA0A0A0],
+        [49, 'Rot blitzend', '', 0xFF0000],
+        [50, 'Blau blitzend', '', 0x0000FF],
+        [51, 'Grün blitzend', '', 0x00FF00],
+        [52, 'Violett blitzend', '', 0xFF00FF],
+        [53, 'Türkis blitzend', '', 0x00FFFF],
+        [54, 'Gelb blitzend', '', 0xFFFF00],
+        [55, 'Weiss blitzend', '', 0xFFFFFF],
     ];
 
     /**
@@ -113,7 +116,7 @@ class WifiLEDControler extends IPSModule
         } else {
             $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeBRG', 4);
         }
-        $this->SendDebug('ApplyChanges', 'IP='.$tcpIP.', RGB='.$rgbID, 0);
+        $this->SendDebug('ApplyChanges', 'IP=' . $tcpIP . ', RGB=' . $rgbID, 0);
     }
 
     /**
@@ -264,15 +267,15 @@ class WifiLEDControler extends IPSModule
      */
     private function SendData($values)
     {
-        $path = 'tcp://'.$this->ReadPropertyString('TCPIP');
+        $path = 'tcp://' . $this->ReadPropertyString('TCPIP');
         $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
         // Check Socket
         if (!$socket) {
-            $this->SendDebug('SendData', $path." -> $errstr ($errno)", 0);
+            $this->SendDebug('SendData', $path . " -> $errstr ($errno)", 0);
 
             return;
         } else {
-            $this->SendDebug('SendData', "Verbindung aufgebaut '".$path."'", 0);
+            $this->SendDebug('SendData', "Verbindung aufgebaut '" . $path . "'", 0);
         }
         $send = '';
         foreach ($values as $value) {
@@ -284,7 +287,7 @@ class WifiLEDControler extends IPSModule
         $data[] = $check;
         // send data
         fwrite($socket, $send);
-        $this->SendDebug('SendData', 'Sende Daten='.implode(',', $data), 0);
+        $this->SendDebug('SendData', 'Sende Daten=' . implode(',', $data), 0);
         // close socket
         fclose($socket);
     }
