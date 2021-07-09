@@ -100,6 +100,7 @@ Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei 
 v2.0.20210701
 
 * _NEU_: Konfigurationsformular vereinheitlicht
+* _FIX_: Berechnung der Geschwindigkeit bei Programmen
 * _FIX_: Code optimiert und Übersetzungen nachgezogen
 * _FIX_: Interne Bibliotheken überarbeitet und vereinheitlicht
 * _FIX_: Debug Meldungen überarbeitet

@@ -220,9 +220,10 @@ class WifiLEDControler extends IPSModule
     {
         $data = [0x61, 0x00, 0x00, 0x0F];
         $mode = $this->GetValue('Mode');
-        $speed = 100 - $this->GetValue('Speed');
-        if ($speed > 100) {
-            $speed = 100;
+        // 31-(x/(100/30))
+        $speed = round(31 - ($this->GetValue('Speed') / (100 / 30)));
+        if ($speed > 31) {
+            $speed = 31;
         } elseif ($speed < 1) {
             $speed = 1;
         }
