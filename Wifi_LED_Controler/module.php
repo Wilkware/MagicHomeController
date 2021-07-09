@@ -299,7 +299,7 @@ class WifiLEDControler extends IPSModule
 
     /**
      * Calculatue checksum for given data.
-     * 
+     *
      * @param array $values Values over which the checksum is to be formed
      * @return integer Checksum
      */
