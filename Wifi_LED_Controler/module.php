@@ -2,59 +2,60 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/traits.php';  // Allgemeine Funktionen
+// Generell funktions
+require_once __DIR__ . '/../libs/_traits.php';
 
+// CLASS WifiLEDControler
 class WifiLEDControler extends IPSModule
 {
     use ProfileHelper;
     use DebugHelper;
-    // Modul
-    private $moduleName = 'Magic Home Control';
+
     // GRB Profil array
     private $assoGRB = [
-        [0, 'Manuell', '', 0x000000],
-        [37, '7-stufiger Farbdurchlauf', '', 0x000000],
-        [38, 'Rot pulsierend', '', 0xFF0000],
-        [39, 'Grün pulsierend', '', 0x00FF00],
-        [40, 'Blau pulsierend', '', 0x0000FF],
-        [41, 'Gelb pulsierend', '', 0xFFFF00],
-        [42, 'Türkis pulsierend', '', 0x00FFFF],
-        [43, 'Violett pulsierend', '', 0xFF00FF],
-        [44, 'Weiss pulsierend', '', 0xFFFFFF],
-        [45, 'Rot Grün pulsierend', '', 0xF0F000],
-        [46, 'Rot Blau pulsierend', '', 0xF000F0],
-        [47, 'Grün Blau pulsierend', '', 0x00F0F0],
-        [48, '7-stufig blitzend', '', 0xA0A0A0],
-        [49, 'Rot blitzend', '', 0xFF0000],
-        [50, 'Grün blitzend', '', 0x00FF00],
-        [51, 'Blau blitzend', '', 0x0000FF],
-        [52, 'Gelb blitzend', '', 0xFFFF00],
-        [53, 'Türkis blitzend', '', 0x00FFFF],
-        [54, 'Violett blitzend', '', 0xFF00FF],
-        [55, 'Weiss blitzend', '', 0xFFFFFF],
+        [0, 'Manually', '', 0x000000],
+        [37, '7-step color sequence', '', 0x000000],
+        [38, 'pulsing red', '', 0xFF0000],
+        [39, 'pulsing green', '', 0x00FF00],
+        [40, 'pulsing blue', '', 0x0000FF],
+        [41, 'pulsing yellow', '', 0xFFFF00],
+        [42, 'pulsing cyan', '', 0x00FFFF],
+        [43, 'pulsing purple', '', 0xFF00FF],
+        [44, 'pulsing white', '', 0xFFFFFF],
+        [45, 'pulsing red + green', '', 0xF0F000],
+        [46, 'pulsing red + blue', '', 0xF000F0],
+        [47, 'ulsing green + blue', '', 0x00F0F0],
+        [48, '7-step flashing', '', 0xA0A0A0],
+        [49, 'flashing red', '', 0xFF0000],
+        [50, 'flashing green', '', 0x00FF00],
+        [51, 'flashing blue', '', 0x0000FF],
+        [52, 'flashing yellow', '', 0xFFFF00],
+        [53, 'flashing cyan', '', 0x00FFFF],
+        [54, 'flashing purple', '', 0xFF00FF],
+        [55, 'flashing white', '', 0xFFFFFF],
     ];
     // BRG Profil array
     private $assoBRG = [
         [0, 'Manuell', '', 0x000000],
-        [37, '7-stufiger Farbdurchlauf', '', 0x000000],
-        [38, 'Rot pulsierend', '', 0xFF0000],
-        [39, 'Blau pulsierend', '', 0x0000FF],
-        [40, 'Grün pulsierend', '', 0x00FF00],
-        [41, 'Violett pulsierend', '', 0xFF00FF],
-        [42, 'Türkis pulsierend', '', 0x00FFFF],
-        [43, 'Gelb pulsierend', '', 0xFFFF00],
-        [44, 'Weiss pulsierend', '', 0xFFFFFF],
-        [45, 'Rot Blau pulsierend', '', 0xF000F0],
-        [46, 'Rot Grün pulsierend', '', 0xF0F000],
-        [47, 'Grün Blau pulsierend', '', 0x00F0F0],
-        [48, '7-stufig blitzend', '', 0xA0A0A0],
-        [49, 'Rot blitzend', '', 0xFF0000],
-        [50, 'Blau blitzend', '', 0x0000FF],
-        [51, 'Grün blitzend', '', 0x00FF00],
-        [52, 'Violett blitzend', '', 0xFF00FF],
-        [53, 'Türkis blitzend', '', 0x00FFFF],
-        [54, 'Gelb blitzend', '', 0xFFFF00],
-        [55, 'Weiss blitzend', '', 0xFFFFFF],
+        [37, '7-step color sequence', '', 0x000000],
+        [38, 'pulsing red', '', 0xFF0000],
+        [39, 'pulsing blue', '', 0x0000FF],
+        [40, 'pulsing green', '', 0x00FF00],
+        [41, 'pulsing purple', '', 0xFF00FF],
+        [42, 'pulsing cyan', '', 0x00FFFF],
+        [43, 'pulsing yellow', '', 0xFFFF00],
+        [44, 'pulsing white', '', 0xFFFFFF],
+        [45, 'pulsing red + blue', '', 0xF000F0],
+        [46, 'pulsing red + green', '', 0xF0F000],
+        [47, 'ulsing green + blue', '', 0x00F0F0],
+        [48, '7-step flashing', '', 0xA0A0A0],
+        [49, 'flashing red', '', 0xFF0000],
+        [50, 'flashing blue', '', 0x0000FF],
+        [51, 'flashing green', '', 0x00FF00],
+        [52, 'flashing purple', '', 0xFF00FF],
+        [53, 'flashing cyan', '', 0x00FFFF],
+        [54, 'flashing yellow', '', 0xFFFF00],
+        [55, 'flashing white', '', 0xFFFFFF],
     ];
 
     /**
@@ -67,21 +68,19 @@ class WifiLEDControler extends IPSModule
         // Config Variablen
         $this->RegisterPropertyString('TCPIP', '127.0.0.1');
         $this->RegisterPropertyString('RGB', '012');
-
         // Variablen Profile einrichten
         $this->RegisterProfile(vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
         $this->RegisterProfile(vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
-
         // Variablen erzeugen
-        $varID = $this->RegisterVariableBoolean('Power', 'Aktiv', '~Switch', 0);
+        $varID = $this->RegisterVariableBoolean('Power', $this->Translate('Power'), '~Switch', 0);
         $this->EnableAction('Power');
-        $varID = $this->RegisterVariableInteger('Color', 'Farbe', '~HexColor', 1);
+        $varID = $this->RegisterVariableInteger('Color', $this->Translate('Color'), '~HexColor', 1);
         $this->EnableAction('Color');
-        $varID = $this->RegisterVariableInteger('Speed', 'Geschwindigkeit', '~Intensity.100', 2);
+        $varID = $this->RegisterVariableInteger('Speed', $this->Translate('Speed'), '~Intensity.100', 2);
         $this->EnableAction('Speed');
-        $varID = $this->RegisterVariableInteger('Brightness', 'Helligkeit', '~Intensity.100', 3);
+        $varID = $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 3);
         $this->EnableAction('Brightness');
-        $varID = $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeGRB', 4);
+        $varID = $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'MHC.ModeGRB', 4);
         $this->EnableAction('Mode');
     }
 
@@ -112,11 +111,11 @@ class WifiLEDControler extends IPSModule
         }
         // Setup variable profil
         if ($rgbID == '012') {
-            $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeGRB', 4);
+            $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'MHC.ModeGRB', 4);
         } else {
-            $this->RegisterVariableInteger('Mode', 'Modus', 'MHC.ModeBRG', 4);
+            $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'MHC.ModeBRG', 4);
         }
-        $this->SendDebug('ApplyChanges', 'IP=' . $tcpIP . ', RGB=' . $rgbID, 0);
+        $this->SendDebug(__FUNCTION__, 'IP=' . $tcpIP . ', RGB=' . $rgbID, 0);
     }
 
     /**
@@ -125,7 +124,7 @@ class WifiLEDControler extends IPSModule
     public function RequestAction($ident, $value)
     {
         // Debug
-        $this->SendDebug('RequestAction', 'RequestAction: ($ident,$value)', 0);
+        $this->SendDebug(__FUNCTION__, 'RequestAction: ($ident,$value)', 0);
 
         switch ($ident) {
             // Switch Power On/Off
@@ -137,19 +136,20 @@ class WifiLEDControler extends IPSModule
                 } else {
                     $this->SendData($off);
                 }
-                SetValue($this->GetIDForIdent($ident), $value);
+                $this->SetValueBoolean($ident, $value);
                 break;
             // Set Speed value
             case 'Speed':
-                SetValue($this->GetIDForIdent($ident), $value);
+                $this->SetValueInteger($ident, $value);
                 $this->SendFunction();
                 break;
             // Set Display Mode
             case 'Mode':
-                IPS_SetDisabled($this->GetIDForIdent('Speed'), !$value);
-                IPS_SetDisabled($this->GetIDForIdent('Color'), $value);
-                IPS_SetDisabled($this->GetIDForIdent('Brightness'), $value);
-                SetValue($this->GetIDForIdent($ident), $value);
+                $disabled = ($value > 0) ? true : false;
+                $this->SetVariableDisabled('Speed', !$disabled);
+                $this->SetVariableDisabled('Color', $disabled);
+                $this->SetVariableDisabled('Brightness', $disabled);
+                $this->SetValueInteger($ident, $value);
                 // Manual mode.
                 if ($value == 0) {
                     $this->SendColor();
@@ -161,7 +161,7 @@ class WifiLEDControler extends IPSModule
                 break;
             case 'Color':
             case 'Brightness':
-                SetValue($this->GetIDForIdent($ident), $value);
+                $this->SetValueInteger($ident, $value);
                 $this->SendColor();
                 break;
             default:
@@ -219,8 +219,8 @@ class WifiLEDControler extends IPSModule
     private function SendFunction()
     {
         $data = [0x61, 0x00, 0x00, 0x0F];
-        $mode = GetValue($this->GetIDForIdent('Mode'));
-        $speed = 100 - GetValue($this->GetIDForIdent('Speed'));
+        $mode = $this->GetValue('Mode');
+        $speed = 100 - $this->GetValue('Speed');
         if ($speed > 100) {
             $speed = 100;
         } elseif ($speed < 1) {
@@ -228,6 +228,7 @@ class WifiLEDControler extends IPSModule
         }
         $data[1] = $mode;
         $data[2] = $speed;
+        $this->SendDebug(__FUNCTION__, $data);
         $this->SendData($data);
     }
 
@@ -237,26 +238,28 @@ class WifiLEDControler extends IPSModule
     private function SendColor()
     {
         $data = [0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F];
-        $brightness = GetValue($this->GetIDForIdent('Brightness')) / 100;
-        $color = GetValue($this->GetIDForIdent('Color'));
+        $brightness = $this->GetValue('Brightness') / 100;
+        $color = $this->GetValue('Color');
         $rgb = [0x00, 0x00, 0x00];
         $rgb[0] = (($color >> 16) & 0xFF); // red
         $rgb[1] = (($color >> 8) & 0xFF); // green
         $rgb[2] = ($color & 0xFF); // blue
+        $this->SendDebug(__FUNCTION__, $rgb);
         // map with brightness
         $rgb[0] *= $brightness;
         $rgb[1] *= $brightness;
         $rgb[2] *= $brightness;
+        $this->SendDebug(__FUNCTION__, $rgb);
         // map rgb channel
         $channel = $this->ReadPropertyString('RGB');
         $index = (int) $channel[0];
-        $this->SendDebug('SendColor', "0 -> $index", 0);
+        $this->SendDebug(__FUNCTION__, "0 -> $index", 0);
         $data[1] = floor($rgb[$index]);
         $index = (int) $channel[1];
-        $this->SendDebug('SendColor', "1 -> $index", 0);
+        $this->SendDebug(__FUNCTION__, "1 -> $index", 0);
         $data[2] = floor($rgb[$index]);
         $index = (int) $channel[2];
-        $this->SendDebug('SendColor', "2 -> $index", 0);
+        $this->SendDebug(__FUNCTION__, "2 -> $index", 0);
         $data[3] = floor($rgb[$index]);
         // send data
         $this->SendData($data);
@@ -264,22 +267,24 @@ class WifiLEDControler extends IPSModule
 
     /**
      * Send data array to controller.
+     *
+     * @param array $values Configuration Data
      */
-    private function SendData($values)
+    private function SendData(array $values)
     {
         $path = 'tcp://' . $this->ReadPropertyString('TCPIP');
         $socket = @fsockopen($path, 5577, $errno, $errstr, 5);
         // Check Socket
         if (!$socket) {
-            $this->SendDebug('SendData', $path . " -> $errstr ($errno)", 0);
-
+            $this->SendDebug(__FUNCTION__, $path . " -> $errstr ($errno)", 0);
             return;
         } else {
-            $this->SendDebug('SendData', "Verbindung aufgebaut '" . $path . "'", 0);
+            $this->SendDebug(__FUNCTION__, "Connection etablished '" . $path . "'", 0);
         }
         $send = '';
+        $this->SendDebug(__FUNCTION__, 'Values=' . print_r($values, true));
         foreach ($values as $value) {
-            $send .= chr($value);
+            $send .= chr(intval($value));
             $data[] = $value;
         }
         $check = $this->GetChecksum($values);
@@ -287,21 +292,72 @@ class WifiLEDControler extends IPSModule
         $data[] = $check;
         // send data
         fwrite($socket, $send);
-        $this->SendDebug('SendData', 'Sende Daten=' . implode(',', $data), 0);
+        $this->SendDebug(__FUNCTION__, 'Data=' . implode(',', $data), 0);
         // close socket
         fclose($socket);
     }
 
     /**
      * Calculatue checksum for given data.
+     * 
+     * @param array $values Values over which the checksum is to be formed
+     * @return integer Checksum
      */
-    private function GetChecksum($values)
+    private function GetChecksum(array $values)
     {
         $checksum = array_sum($values);
         $checksum = dechex($checksum);
         $checksum = substr($checksum, -2);
         $checksum = hexdec($checksum);
-
+        // Return checksum
         return $checksum;
+    }
+
+    /**
+     * Update a boolean value.
+     *
+     * @param string $ident Ident of the boolean variable
+     * @param bool   $value Value of the boolean variable
+     */
+    private function SetValueBoolean(string $ident, bool $value)
+    {
+        $id = $this->GetIDForIdent($ident);
+        SetValueBoolean($id, $value);
+    }
+
+    /**
+     * Update a string value.
+     *
+     * @param string $ident Ident of the string variable
+     * @param string $value Value of the string variable
+     */
+    private function SetValueString(string $ident, string $value)
+    {
+        $id = $this->GetIDForIdent($ident);
+        SetValueString($id, $value);
+    }
+
+    /**
+     * Update a integer value.
+     *
+     * @param string $ident Ident of the integer variable
+     * @param int    $value Value of the integer variable
+     */
+    private function SetValueInteger(string $ident, int $value)
+    {
+        $id = $this->GetIDForIdent($ident);
+        SetValueInteger($id, $value);
+    }
+
+    /**
+     * Sets the variable inactive.
+     *
+     * @param string $ident Ident of the integer variable
+     * @param bool   $value Enable or disable value the variable
+     */
+    private function SetVariableDisabled(string $ident, bool $value)
+    {
+        $id = $this->GetIDForIdent($ident);
+        IPS_SetDisabled($id, $value);
     }
 }

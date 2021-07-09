@@ -1,8 +1,8 @@
 # MHC - Magic Home Controller
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Symcon%20Version-5.0%20%3E-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.2.20190812-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
+[![Version](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-2.0.20210701-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
 
@@ -28,7 +28,7 @@ Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 2. Voraussetzungen
 
-* ab IP-Symcon Version 5.0
+* IP-Symcon ab Version 5.2
 
 ### 3. Installation
 
@@ -38,7 +38,7 @@ Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
-* Unter "Instanz hinzufügen" ist das 'Magic Home Controller'-Modul (Alias: LED Controller) unter dem Hersteller '(Sonstige)' aufgeführt.
+* Unter "Instanz hinzufügen" ist das *Magic Home Controller*-Modul (Alias: *LED Controller*) unter dem Hersteller _'(Geräte)'_ aufgeführt.
 
 __Konfigurationsseite__:
 
@@ -46,7 +46,9 @@ Die Konfiguration beinhaltet die Zuweisung der IP-Adresse und der Auswahl der Fa
 Derzeit werden Stripes mit der Reihenfolge GRB (Gelb, Rot, Blau) und BRG (Blau, Rot, Gelb) unterstützt.  
 Die Reihenfolge der Pins beginnt immer ausgehend vom GND-Pin (12V Pin).
 
-Darüber hinaus kann noch ausgewählt werden, ob die Debug-Meldungen auch im Status Logging (Log Meldungen) ausgegeben werden sollen.
+Einstellungsbereich:
+
+> Einstellungen ...
 
 Name               | Beschreibung
 ------------------ | ---------------------------------
@@ -69,19 +71,39 @@ Man kann die Statusvariaben direkt im WebFront verlinken.
 
 ### 7. PHP-Befehlsreferenz
 
-`void MHC_SetBrightness(int $InstanzID, int $Brightness);`  
+```php
+void MHC_SetBrightness(int $InstanzID, int $Brightness);
+```
+
 Setzt die Helligkeit auf $Brightness. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_SetColor(int $InstanzID, int $Color);`  
+```php
+void MHC_SetColor(int $InstanzID, int $Color);
+```
+
 Setzt den Farbwert auf $Color. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_SetMode(int $InstanzID, int $Mode);`  
+```php
+void MHC_SetMode(int $InstanzID, int $Mode);
+```
+
 Setzt den Anzeigemodus auf auf $Mode. Die Funktion liefert keinerlei Rückgabewert.
 
-`void MHC_Power(int $InstanzID, bool $Power);`  
+```php
+void MHC_Power(int $InstanzID, bool $Power);
+```
+
 Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
 
 ### 8. Versionshistorie
+
+v2.0.20210701
+
+* _NEU_: Konfigurationsformular vereinheitlicht
+* _FIX_: Code optimiert und Übersetzungen nachgezogen
+* _FIX_: Interne Bibliotheken überarbeitet und vereinheitlicht
+* _FIX_: Debug Meldungen überarbeitet
+* _FIX_: Dokumentation überarbeitet
 
 v1.2.20190812
 
@@ -107,13 +129,15 @@ Vielen Dank für die hervorragende und tolle Arbeit!
 
 ## Entwickler
 
-* Heiko Wilknitz ([@wilkware](https://github.com/wilkware))
+Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der IP-Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
+
+[![GitHub](https://img.shields.io/badge/GitHub-@wilkware-blueviolet.svg?logo=github)](https://wilkware.github.io/)
 
 ## Spenden
 
-Die Software ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Entwickler bitte hier:
+Die Software ist für die nicht kommzerielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich freuen.
 
-[![License](https://img.shields.io/badge/Einfach%20spenden%20mit-PayPal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
+[![PayPal](https://img.shields.io/badge/PayPal-spenden-blue.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
 
 ## Lizenz
 
