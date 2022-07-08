@@ -1,0 +1,13 @@
+{
+    "translations": {
+        "de": {
+            "\nMagic Home Controller Search\n ": "\nMagic Home Controllersuche\n ",
+            "Using this configurator, you can select from the list of currently found contollers and create an instance for a new controller or check an existing instance.": "Mit Hilfe dieser Konfigurators kann man aus der Liste der aktuell gefundenen Steuergeräte auswählen und eine Instanz für ein neuen Controller erstellen oder eine vorhandene Instanz prüfen.",
+            "Magic Home Controller:": "Magic Home Steuergeräte:",
+            "Target Category:": "Zielkategorie:",
+            "IP Address": "IP Adresse",
+            "Model name": "Modellename",
+            "Device state": "Gerätestatus"
+        }
+    }
+}

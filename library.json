@@ -1,9 +1,12 @@
 {
-  "id": "{85ACC6E1-5C24-44A5-A9B0-AA75D5C5F8D7}",
-  "author": "Wilkware (@Pitti)",
-  "name": "Magic Home Controler",
-  "url": "http://www.wilkware.de",
-  "version": "2.0",
-  "build": 20210701,
-  "date": 1625133600
+    "id": "{85ACC6E1-5C24-44A5-A9B0-AA75D5C5F8D7}",
+    "author": "Wilkware (@Pitti)",
+    "url": "https://wilkware.de",
+    "compatibility": {
+        "version": "6.0"
+    },
+    "name": "Magic Home Controler",
+    "version": "3.0",
+    "build": 20220313,
+    "date": 1647169200
 }

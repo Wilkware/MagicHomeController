@@ -1,0 +1,14 @@
+{
+    "id": "{E3529714-0243-4D6A-A8F1-899EEF818A1F}",
+    "name": "Magic Home Controller",
+    "type": 3,
+    "vendor": "Magic Home",
+    "aliases": [
+        "LED Wifi Controller",
+        "LED Strips Controller"
+    ],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "MHC"
+}

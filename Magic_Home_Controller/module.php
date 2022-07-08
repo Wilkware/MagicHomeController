@@ -5,11 +5,13 @@ declare(strict_types=1);
 // Generell funktions
 require_once __DIR__ . '/../libs/_traits.php';
 
-// CLASS WifiLEDControler
-class WifiLEDControler extends IPSModule
+// CLASS MagicHomeController
+class MagicHomeController extends IPSModule
 {
-    use ProfileHelper;
     use DebugHelper;
+    use MagicHelper;
+    use ProfileHelper;
+    use VariableHelper;
 
     // GRB Profil array
     private $assoGRB = [
@@ -33,7 +35,9 @@ class WifiLEDControler extends IPSModule
         [53, 'flashing cyan', '', 0x00FFFF],
         [54, 'flashing purple', '', 0xFF00FF],
         [55, 'flashing white', '', 0xFFFFFF],
+        // [56, '7-step color jumping', '', 0x000000],
     ];
+
     // BRG Profil array
     private $assoBRG = [
         [0, 'Manuell', '', 0x000000],
@@ -65,9 +69,14 @@ class WifiLEDControler extends IPSModule
     {
         // Never delete this line!
         parent::Create();
-        // Config Variablen
+        // Device Variablen
+        $this->RegisterPropertyInteger('TYPE', 51);
+        $this->RegisterPropertyString('MODEL', 'Unknown');
         $this->RegisterPropertyString('TCPIP', '127.0.0.1');
+        $this->RegisterPropertyString('MAC', '');
+
         $this->RegisterPropertyString('RGB', '012');
+
         // Variablen Profile einrichten
         $this->RegisterProfile(vtInteger, 'MHC.ModeGRB', 'Bulb', '', '', 0, 0, 0, 0, $this->assoGRB);
         $this->RegisterProfile(vtInteger, 'MHC.ModeBRG', 'Bulb', '', '', 0, 0, 0, 0, $this->assoBRG);
@@ -124,19 +133,12 @@ class WifiLEDControler extends IPSModule
     public function RequestAction($ident, $value)
     {
         // Debug
-        $this->SendDebug(__FUNCTION__, 'RequestAction: ($ident,$value)', 0);
-
+        $this->SendDebug(__FUNCTION__, $ident . ' => ' . $value);
         switch ($ident) {
             // Switch Power On/Off
             case 'Power':
-                $on = [0x71, 0x23, 0x0f];
-                $off = [0x71, 0x24, 0x0f];
-                if ($value) {
-                    $this->SendData($on);
-                } else {
-                    $this->SendData($off);
-                }
                 $this->SetValueBoolean($ident, $value);
+                $this->SendPower($value);
                 break;
             // Set Speed value
             case 'Speed':
@@ -167,6 +169,11 @@ class WifiLEDControler extends IPSModule
             default:
                 throw new Exception('Invalid Ident');
         }
+    }
+
+    public function Test()
+    {
+        $protocol = new ProtocolLEDENET8Byte();
     }
 
     /**
@@ -214,22 +221,40 @@ class WifiLEDControler extends IPSModule
     }
 
     /**
+     * Send power state data.
+     */
+    private function SendPower($value)
+    {
+        $type = $this->ReadPropertyInteger('TYPE');
+        $class = CLASS_PROTOCOL[MAGIC_HOME_CONTROLLER[$type][1]];
+        $protocol = new $class();
+        $state = $protocol->ConstructStateChange($value);
+        $this->SendData($state);
+    }
+
+    /**
      * Send function data.
      */
     private function SendFunction()
     {
-        $data = [0x61, 0x00, 0x00, 0x0F];
-        $mode = $this->GetValue('Mode');
+        $pattern = $this->GetValue('Mode');
         // 31-(x/(100/30))
-        $speed = round(31 - ($this->GetValue('Speed') / (100 / 30)));
+        // $speed = round(31 - ($this->GetValue('Speed') / (100 / 30)));
+        $speed = $this->GetValue('Speed');
+        $brightness = $this->GetValue('Brightness') / 100;
+        /*
         if ($speed > 31) {
             $speed = 31;
         } elseif ($speed < 1) {
             $speed = 1;
         }
-        $data[1] = $mode;
-        $data[2] = $speed;
-        $this->SendDebug(__FUNCTION__, $data);
+         */
+        // protocol
+        $type = $this->ReadPropertyInteger('TYPE');
+        $class = CLASS_PROTOCOL[MAGIC_HOME_CONTROLLER[$type][1]];
+        $protocol = new $class();
+        $data = $protocol->ConstructPresetPattern($pattern, $speed, $brightness);
+        // send data
         $this->SendData($data);
     }
 
@@ -238,7 +263,6 @@ class WifiLEDControler extends IPSModule
      */
     private function SendColor()
     {
-        $data = [0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F];
         $brightness = $this->GetValue('Brightness') / 100;
         $color = $this->GetValue('Color');
         $rgb = [0x00, 0x00, 0x00];
@@ -255,13 +279,18 @@ class WifiLEDControler extends IPSModule
         $channel = $this->ReadPropertyString('RGB');
         $index = (int) $channel[0];
         $this->SendDebug(__FUNCTION__, "0 -> $index", 0);
-        $data[1] = floor($rgb[$index]);
+        $r = floor($rgb[$index]);
         $index = (int) $channel[1];
         $this->SendDebug(__FUNCTION__, "1 -> $index", 0);
-        $data[2] = floor($rgb[$index]);
+        $g = floor($rgb[$index]);
         $index = (int) $channel[2];
         $this->SendDebug(__FUNCTION__, "2 -> $index", 0);
-        $data[3] = floor($rgb[$index]);
+        $b = floor($rgb[$index]);
+        // protocol
+        $type = $this->ReadPropertyInteger('TYPE');
+        $class = CLASS_PROTOCOL[MAGIC_HOME_CONTROLLER[$type][1]];
+        $protocol = new $class();
+        $data = $protocol->ConstructLevelsChange(true, $r, $g, $b, 0x00, 0x00, 0x00);
         // send data
         $this->SendData($data);
     }
@@ -280,20 +309,16 @@ class WifiLEDControler extends IPSModule
             $this->SendDebug(__FUNCTION__, $path . " -> $errstr ($errno)", 0);
             return;
         } else {
-            $this->SendDebug(__FUNCTION__, "Connection etablished '" . $path . "'", 0);
+            $this->SendDebug(__FUNCTION__, 'Connection etablished: ' . $path, 0);
         }
         $send = '';
-        $this->SendDebug(__FUNCTION__, 'Values=' . print_r($values, true));
+        //$this->SendDebug(__FUNCTION__, 'Values=' . print_r($values, true));
         foreach ($values as $value) {
             $send .= chr(intval($value));
-            $data[] = $value;
         }
-        $check = $this->GetChecksum($values);
-        $send .= chr($check);
-        $data[] = $check;
         // send data
         fwrite($socket, $send);
-        $this->SendDebug(__FUNCTION__, 'Data=' . implode(',', $data), 0);
+        $this->SendDebug(__FUNCTION__, 'Data=' . bin2hex($send), 0);
         // close socket
         fclose($socket);
     }
@@ -312,53 +337,5 @@ class WifiLEDControler extends IPSModule
         $checksum = hexdec($checksum);
         // Return checksum
         return $checksum;
-    }
-
-    /**
-     * Update a boolean value.
-     *
-     * @param string $ident Ident of the boolean variable
-     * @param bool   $value Value of the boolean variable
-     */
-    private function SetValueBoolean(string $ident, bool $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueBoolean($id, $value);
-    }
-
-    /**
-     * Update a string value.
-     *
-     * @param string $ident Ident of the string variable
-     * @param string $value Value of the string variable
-     */
-    private function SetValueString(string $ident, string $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueString($id, $value);
-    }
-
-    /**
-     * Update a integer value.
-     *
-     * @param string $ident Ident of the integer variable
-     * @param int    $value Value of the integer variable
-     */
-    private function SetValueInteger(string $ident, int $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueInteger($id, $value);
-    }
-
-    /**
-     * Sets the variable inactive.
-     *
-     * @param string $ident Ident of the integer variable
-     * @param bool   $value Enable or disable value the variable
-     */
-    private function SetVariableDisabled(string $ident, bool $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        IPS_SetDisabled($id, $value);
     }
 }

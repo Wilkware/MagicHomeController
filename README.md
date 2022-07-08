@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-2.0.20210701-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20220630-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
 
@@ -22,13 +22,10 @@ IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Ho
 ### 1. Funktionsumfang
 
 Das Modul dient zur Ansteuerung von LED Stripes mittels eines WiFi LED Controllers des Herstellers Magic Home.
-Das sind Controller vom Typ LD382 bzw. LD382A.
-
-Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 5.2
+* IP-Symcon ab Version 6.0
 
 ### 3. Installation
 
@@ -38,7 +35,7 @@ Wenn jemand noch weitere kennt, bitte einfach bei mir melden!
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
-* Unter "Instanz hinzufügen" ist das *Magic Home Controller*-Modul (Alias: *LED Controller*) unter dem Hersteller _'(Geräte)'_ aufgeführt.
+* Unter "Instanz hinzufügen" ist das _Magic Home Controller_-Modul (Alias: _LED Controller_) unter dem Hersteller _'(Geräte)'_ aufgeführt.
 
 __Konfigurationsseite__:
 
@@ -72,30 +69,36 @@ Man kann die Statusvariaben direkt im WebFront verlinken.
 ### 7. PHP-Befehlsreferenz
 
 ```php
-void MHC_SetBrightness(int $InstanzID, int $Brightness);
+void MHC_SetBrightness(int $instanzID, int $brightness);
 ```
 
-Setzt die Helligkeit auf $Brightness. Die Funktion liefert keinerlei Rückgabewert.
+Setzt die Helligkeit auf $brightness. Die Funktion liefert keinerlei Rückgabewert.
 
 ```php
-void MHC_SetColor(int $InstanzID, int $Color);
+void MHC_SetColor(int $instanzID, int $color);
 ```
 
-Setzt den Farbwert auf $Color. Die Funktion liefert keinerlei Rückgabewert.
+Setzt den Farbwert auf $color. Die Funktion liefert keinerlei Rückgabewert.
 
 ```php
-void MHC_SetMode(int $InstanzID, int $Mode);
+void MHC_SetMode(int $instanzID, int $mode);
 ```
 
-Setzt den Anzeigemodus auf auf $Mode. Die Funktion liefert keinerlei Rückgabewert.
+Setzt den Anzeigemodus auf auf $mode. Die Funktion liefert keinerlei Rückgabewert.
 
 ```php
-void MHC_Power(int $InstanzID, bool $Power);
+void MHC_Power(int $instanzID, bool $power);
 ```
 
-Schaltet den Controler Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
+Schaltet den Controller Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
 
 ### 8. Versionshistorie
+
+v3.0.20220630
+
+* _NEU_: Discovery Modul hinzugefügt
+* _FIX_: Controller Modul umbenannt
+* _NEU_: Erkennen von 27 verschiedene Controllern
 
 v2.0.20210701
 
