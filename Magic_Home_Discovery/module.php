@@ -138,15 +138,17 @@ class MagicHomeDiscovery extends IPSModule
                 // NO DATA
                 $this->SendDebug(__FUNCTION__, 'No Version Data for model \'' . $controller['model'] . ' on ' . $controller['tcpip']);
             }
-            $this->SendDebug(__FUNCTION__, $buf); // '+ok=A1_18_20181031<CR>'
-            if ($this->StrStartsWith($buf, '+ok=')) {
-                $buf = str_replace("\r", '', $buf); // \r = <CR>
-                $info = explode('_', $buf);
-                $this->SendDebug(__FUNCTION__, $info);
-                $data[$i]['number'] = intval(substr($info[0], 4), 16); // hex
-                $data[$i]['version'] = intval($info[1], 16); // hex
-                $data[$i]['firmware'] = substr($info[2], 6, 2) . '.' . substr($info[2], 4, 2) . '.' . substr($info[2], 0, 4);
-                $data[$i]['info'] = (isset($info[3])) ? $info[3] : '';
+            else {
+                $this->SendDebug(__FUNCTION__, $buf); // '+ok=A1_18_20181031<CR>'
+                if ($this->StrStartsWith($buf, '+ok=')) {
+                    $buf = str_replace("\r", '', $buf); // \r = <CR>
+                    $info = explode('_', $buf);
+                    $this->SendDebug(__FUNCTION__, $info);
+                    $data[$i]['number'] = intval(substr($info[0], 4), 16); // hex
+                    $data[$i]['version'] = intval($info[1], 16); // hex
+                    $data[$i]['firmware'] = substr($info[2], 6, 2) . '.' . substr($info[2], 4, 2) . '.' . substr($info[2], 0, 4);
+                    $data[$i]['info'] = (isset($info[3])) ? $info[3] : '';
+                }
             }
             $i++;
         }
