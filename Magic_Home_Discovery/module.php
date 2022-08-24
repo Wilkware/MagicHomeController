@@ -111,6 +111,7 @@ class MagicHomeDiscovery extends IPSModule
         // Create UDP Broadcast Socket
         $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
+        socket_set_option($sock, SOL_SOCKET, SO_REUSEADDR, 1);
         socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_SEM, 'usec'=>0]);
 
         // Collect all data
@@ -123,7 +124,7 @@ class MagicHomeDiscovery extends IPSModule
             if ($ret === false) {
                 break;
             }
-            $this->SendDebug(__FUNCTION__, $buf);
+            $this->SendDebug(__FUNCTION__, $buf); // e.g. '192.168.0.100,43219128B84F,AK001-ZJ210'
             $info = explode(',', $buf);
             $data[] = ['tcpip' => $info[0], 'mac' => $info[1], 'model' => $info[2]];
         }
@@ -137,12 +138,13 @@ class MagicHomeDiscovery extends IPSModule
                 // NO DATA
                 $this->SendDebug(__FUNCTION__, 'No Version Data for model \'' . $controller['model'] . ' on ' . $controller['tcpip']);
             }
+            $this->SendDebug(__FUNCTION__, $buf); // '+ok=A1_18_20181031<CR>'
             if ($this->StrStartsWith($buf, '+ok=')) {
-                $buf = str_replace("\r", '', $buf);
-                $this->SendDebug(__FUNCTION__, $info);
+                $buf = str_replace("\r", '', $buf); // \r = <CR>
                 $info = explode('_', $buf);
-                $data[$i]['number'] = intval(substr($info[0], 4), 16);
-                $data[$i]['version'] = intval($info[1], 16);
+                $this->SendDebug(__FUNCTION__, $info);
+                $data[$i]['number'] = intval(substr($info[0], 4), 16); // hex
+                $data[$i]['version'] = intval($info[1], 16); // hex
                 $data[$i]['firmware'] = substr($info[2], 6, 2) . '.' . substr($info[2], 4, 2) . '.' . substr($info[2], 0, 4);
                 $data[$i]['info'] = (isset($info[3])) ? $info[3] : '';
             }
