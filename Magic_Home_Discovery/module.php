@@ -17,7 +17,8 @@ class MagicHomeDiscovery extends IPSModule
     private const DISCOVERY_PORT = 48899;
     private const DISCOVERY_MSG = 'HF-A11ASSISTHREAD';
     private const DISCOVERY_VER = "AT+LVER\r";
-    private const DISCOVERY_SEC = 1;
+    private const DISCOVERY_SEM = 1;
+    private const DISCOVERY_SEV = 2;
 
     // Controller ID
     private const MODUL_CONTROLLER_ID = '{E3529714-0243-4D6A-A8F1-899EEF818A1F}';
@@ -74,23 +75,26 @@ class MagicHomeDiscovery extends IPSModule
         if (!empty($controllers)) {
             foreach ($controllers as $controller) {
                 $this->SendDebug(__FUNCTION__, $controller);
-                $values[] = [
-                    'instanceID'    => $this->GetControlerInstances($controller['tcpip']),
-                    'tcpip'         => $controller['tcpip'],
-                    'macid'         => $controller['mac'],
-                    'model'         => $controller['model'],
-                    'type'          => MAGIC_HOME_CONTROLLER[$controller['number']][0],
-                    'info'          => $controller['info'],
-                    'version'       => $controller['version'],
-                    'firmware'      => $controller['firmware'],
-                    'create'        => [
-                        [
-                            'moduleID'      => self::MODUL_CONTROLLER_ID,
-                            'configuration' => ['TCPIP' => $controller['tcpip'], 'MAC' => $controller['mac'], 'MODEL' => $controller['model'], 'TYPE' => $controller['number']],
-                            'location'      => $location,
+                // only if we found the type of controller
+                if (isset($controller['number'])) {
+                    $values[] = [
+                        'instanceID'    => $this->GetControlerInstances($controller['tcpip']),
+                        'tcpip'         => $controller['tcpip'],
+                        'macid'         => $controller['mac'],
+                        'model'         => $controller['model'],
+                        'type'          => MAGIC_HOME_CONTROLLER[$controller['number']][0],
+                        'info'          => $controller['info'],
+                        'version'       => $controller['version'],
+                        'firmware'      => $controller['firmware'],
+                        'create'        => [
+                            [
+                                'moduleID'      => self::MODUL_CONTROLLER_ID,
+                                'configuration' => ['TCPIP' => $controller['tcpip'], 'MAC' => $controller['mac'], 'MODEL' => $controller['model'], 'TYPE' => $controller['number']],
+                                'location'      => $location,
+                            ],
                         ],
-                    ],
-                ];
+                    ];
+                }
             }
             $form['actions'][0]['values'] = $values;
         }
@@ -107,7 +111,7 @@ class MagicHomeDiscovery extends IPSModule
         // Create UDP Broadcast Socket
         $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
-        socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_SEC, 'usec'=>0]);
+        socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_SEM, 'usec'=>0]);
 
         // Collect all data
         $data = [];
@@ -125,25 +129,24 @@ class MagicHomeDiscovery extends IPSModule
         }
 
         $i = 0;
+        socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_SEV, 'usec'=>0]);
         foreach ($data as $controller) {
-            //socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>1, 'usec'=>0]);
             socket_sendto($sock, self::DISCOVERY_VER, strlen(self::DISCOVERY_VER), 0, $controller['tcpip'], self::DISCOVERY_PORT);
-            while (true) {
-                $ret = @socket_recvfrom($sock, $buf, 64, 0, $ip, $port);
-                if ($ret === false) {
-                    break;
-                }
-                if ($this->StrStartsWith($buf, '+ok=')) {
-                    $buf = str_replace("\r", '', $buf);
-                    $this->SendDebug(__FUNCTION__, $info);
-                    $info = explode('_', $buf);
-                    $data[$i]['number'] = intval(substr($info[0], 4), 16);
-                    $data[$i]['version'] = intval($info[1], 16);
-                    $data[$i]['firmware'] = substr($info[2], 6, 2) . '.' . substr($info[2], 4, 2) . '.' . substr($info[2], 0, 4);
-                    $data[$i]['info'] = (isset($info[3])) ? $info[3] : '';
-                }
-                $i++;
+            $ret = @socket_recvfrom($sock, $buf, 64, 0, $ip, $port);
+            if ($ret === false) {
+                // NO DATA
+                $this->SendDebug(__FUNCTION__, 'No Version Data for model \'' . $controller['model'] . ' on ' . $controller['tcpip']);
             }
+            if ($this->StrStartsWith($buf, '+ok=')) {
+                $buf = str_replace("\r", '', $buf);
+                $this->SendDebug(__FUNCTION__, $info);
+                $info = explode('_', $buf);
+                $data[$i]['number'] = intval(substr($info[0], 4), 16);
+                $data[$i]['version'] = intval($info[1], 16);
+                $data[$i]['firmware'] = substr($info[2], 6, 2) . '.' . substr($info[2], 4, 2) . '.' . substr($info[2], 0, 4);
+                $data[$i]['info'] = (isset($info[3])) ? $info[3] : '';
+            }
+            $i++;
         }
         // close  socket
         socket_close($sock);

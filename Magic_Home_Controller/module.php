@@ -140,12 +140,12 @@ class MagicHomeController extends IPSModule
                 $this->SetValueBoolean($ident, $value);
                 $this->SendPower($value);
                 break;
-            // Set Speed value
+                // Set Speed value
             case 'Speed':
                 $this->SetValueInteger($ident, $value);
                 $this->SendFunction();
                 break;
-            // Set Display Mode
+                // Set Display Mode
             case 'Mode':
                 $disabled = ($value > 0) ? true : false;
                 $this->SetVariableDisabled('Speed', !$disabled);
