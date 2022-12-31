@@ -3,8 +3,7 @@
     "name": "Magic Home Discovery",
     "type": 5,
     "vendor": "Magic Home",
-    "aliases": [
-    ],
+    "aliases": [],
     "url": "https://wilkware.de/ip-symcon-module/mhc/",
     "parentRequirements": [],
     "childRequirements": [],

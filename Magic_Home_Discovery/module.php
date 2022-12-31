@@ -137,8 +137,7 @@ class MagicHomeDiscovery extends IPSModule
             if ($ret === false) {
                 // NO DATA
                 $this->SendDebug(__FUNCTION__, 'No Version Data for model \'' . $controller['model'] . ' on ' . $controller['tcpip']);
-            }
-            else {
+            } else {
                 $this->SendDebug(__FUNCTION__, $buf); // '+ok=A1_18_20181031<CR>'
                 if ($this->StrStartsWith($buf, '+ok=')) {
                     $buf = str_replace("\r", '', $buf); // \r = <CR>

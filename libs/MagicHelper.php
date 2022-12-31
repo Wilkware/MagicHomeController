@@ -61,7 +61,11 @@ const MSG_LENGTHS = [
     MSG_ADDRESSABLE_STATE    => LEDENET_STATE_ADDRESSABLE_RESPONSE_LEN,
 ];
 
-# Protocol names
+const EFFECT_CUSTOM_CODE = 0x60;
+const PRESET_MUSIC_MODE = 0x62;
+
+
+# Protocol id's
 const PROTOCOL_LEDENET_ORIGINAL = 0;
 const PROTOCOL_LEDENET_9BYTE = 1;
 const PROTOCOL_LEDENET_9BYTE_DIMMABLE_EFFECTS = 2;
@@ -85,6 +89,29 @@ const CLASS_PROTOCOL = [
     PROTOCOL_LEDENET_CCT                    => 'ProtocolLEDENETCCT',
 ];
 
+# Adressable Protocolls
+const ADDRESSABLE_PROTOCOLS = [
+    PROTOCOL_LEDENET_ADDRESSABLE_A1,
+    PROTOCOL_LEDENET_ADDRESSABLE_A2,
+    PROTOCOL_LEDENET_ADDRESSABLE_A3,
+];
+
+const ORIGINAL_EFFECTS_PROTOCOLS = [
+    PROTOCOL_LEDENET_ADDRESSABLE_A1,
+];
+
+const ADDRESSABLE_EFFECTS_PROTOCOLS = [
+    PROTOCOL_LEDENET_ADDRESSABLE_A2,
+    PROTOCOL_LEDENET_ADDRESSABLE_A3,
+];
+
+const BRIGHTNESS_EFFECTS_PROTOCOLS = [
+    PROTOCOL_LEDENET_9BYTE_DIMMABLE_EFFECTS,
+    PROTOCOL_LEDENET_8BYTE_DIMMABLE_EFFECTS,
+    PROTOCOL_LEDENET_ADDRESSABLE_A2,
+    PROTOCOL_LEDENET_ADDRESSABLE_A3,
+];
+
 # Controller models (model => <name>, <protocol>, <write-white>)
 const MAGIC_HOME_CONTROLLER = [
     0x01 => ['Original LEDENET', PROTOCOL_LEDENET_ORIGINAL, false],
@@ -99,9 +126,9 @@ const MAGIC_HOME_CONTROLLER = [
     0x16 => ['Magnetic Light CCT', PROTOCOL_LEDENET_8BYTE, false],
     0x17 => ['Magnetic Light Dimable', PROTOCOL_LEDENET_8BYTE, false],
     0x18 => ['Plant Light', PROTOCOL_LEDENET_8BYTE, false],
-    0x1B => ['Spray Light', PROTOCOL_LEDENET_8BYTE, false],
     0x19 => ['Smart Socket 2 USB', PROTOCOL_LEDENET_8BYTE, false],
     0x1A => ['Christmas Light', PROTOCOL_LEDENET_8BYTE, false],
+    0x1B => ['Spray Light', PROTOCOL_LEDENET_8BYTE, false],
     0x1C => ['Table Light CCT', PROTOCOL_LEDENET_CCT, false],
     0x21 => ['Smart Bulb Dimmable', PROTOCOL_LEDENET_8BYTE, true],
     0x25 => ['RGB/WW/CW Controller', PROTOCOL_LEDENET_9BYTE, false],
@@ -125,6 +152,16 @@ const MAGIC_HOME_CONTROLLER = [
     0xD1 => ['Digital Light', PROTOCOL_LEDENET_8BYTE, false],
     0xE1 => ['Ceiling Light', PROTOCOL_LEDENET_8BYTE, false],
     0xE2 => ['Ceiling Light Assist', PROTOCOL_LEDENET_8BYTE, false],
+];
+
+# Non light device models
+const MAGIC_HOME_SWITCHES = [0x19, 0x93, 0x0B, 0x93, 0x94, 0x95, 0x96, 0x97];
+
+# Supported Present Pattern by model
+const MAGIC_HOME_PATTERN = [
+    'MHC.Preset'        => [0x01, 0x04, 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0E, 0x10, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x21, 0x25, 0x33, 0x35, 0x41, 0x44, 0x45, 0x52, 0x54, 0x62, 0x81, 0x93, 0x94, 0x95, 0x96, 0x97, 0xD1, 0xE1, 0xE2],
+    'MHC.Original'      => [0xA1],
+    'MHC.Addressable'   => [0xA2, 0xA3],
 ];
 
 // The base protocol.
@@ -158,7 +195,7 @@ abstract class ProtocolBase
     // The bytes to send for a preset pattern.
     public function ConstructPresetPattern($pattern, $speed, $brightness)
     {
-        $delay = $this->SpeedToDelay($speed);
+        $delay = self::SpeedToDelay($speed);
         $msg = [0x61, $pattern, $delay, 0x0F];
         return $this->ConstructMessage($msg);
     }
@@ -194,7 +231,7 @@ abstract class ProtocolBase
             }
         }
         $msg[] = 0x00;
-        $msg[] = $this->SpeedToDelay($speed);
+        $msg[] = self::SpeedToDelay($speed);
         $msg[] = isset(TRANSITION_BYTES[$transtype]) ? TRANSITION_BYTES[$transtype] : TRANSITION_BYTES[TRANSITION_GRADUAL]; # default to "gradual"
         $msg[] = 0xFF;
         $msg[] = 0x0F;
@@ -202,7 +239,12 @@ abstract class ProtocolBase
     }
 
     // The name of the protocol.
-    abstract public function Name();
+    public function Name() {
+        return CLASS_PROTOCOL[$this->Id()];
+    }
+
+    // The ID of the protocol.
+    abstract public function Id();
 
     // The bytes to send for a query request.
     abstract public function ConstructStateQuery();
@@ -217,15 +259,27 @@ abstract class ProtocolBase
     abstract public function IsValidStateResponse($raw);
 
     // Returns delay
-    protected function SpeedToDelay($speed)
+    public static function SpeedToDelay($speed)
     {
         # speed is 0-100, delay is 1-31
         $speed = max(0, min(100, $speed));
         $inv_speed = 100 - $speed;
-        $delay = intval(($inv_speed * (0x1f - 1)) / 100);
+        $delay = intval(($inv_speed * (0x1F - 1)) / 100);
         # translate from 0-30 to 1-31
         $delay = $delay + 1;
         return $delay;
+    }
+
+    // Returns spped
+    public static function DelayToSpeed($delay)
+    {
+        # speed is 0-100, delay is 1-31
+        # 1st translate delay to 0-30
+        $delay = $delay - 1;
+        $delay = max(0, min(0x1F - 1, $delay));
+        $inv_speed = intval(($delay * 100) / (0x1F - 1));
+        $speed = 100 - $inv_speed;
+        return $speed;
     }
 
     // Returns Scaled Color Temparture
@@ -301,8 +355,8 @@ abstract class ProtocolBase
 // The original LEDENET protocol with no checksums.
 class ProtocolLEDENETOriginal extends ProtocolBase
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_ORIGINAL;
     }
@@ -380,8 +434,8 @@ class ProtocolLEDENET8Byte extends ProtocolBase
     private $ADDRESSABLE_HEADER = [0xB0, 0xB1, 0xB2, 0xB3, 0x00, 0x01, 0x01];
     private $addressableResponseLength = LEDENET_STATE_ADDRESSABLE_RESPONSE_LEN;
 
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_8BYTE;
     }
@@ -509,8 +563,8 @@ class ProtocolLEDENET8Byte extends ProtocolBase
 // The LEDENET protocol with checksums that uses 9 bytes to set state.
 class ProtocolLEDENET8ByteDimmableEffects extends ProtocolLEDENET8Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_8BYTE_DIMMABLE_EFFECTS;
     }
@@ -524,7 +578,7 @@ class ProtocolLEDENET8ByteDimmableEffects extends ProtocolLEDENET8Byte
     // The bytes to send for a preset pattern.
     public function ConstructPresetPattern($pattern, $speed, $brightness)
     {
-        $delay = $this->SpeedToDelay($speed);
+        $delay = self::SpeedToDelay($speed);
         $msg = [0x38, $pattern, $delay, $brightness];
         return $this->ConstructMessage($msg);
     }
@@ -533,8 +587,8 @@ class ProtocolLEDENET8ByteDimmableEffects extends ProtocolLEDENET8Byte
 // The newer LEDENET protocol with checksums that uses 9 bytes to set state.
 class ProtocolLEDENET9Byte extends ProtocolLEDENET8Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_9BYTE;
     }
@@ -563,8 +617,8 @@ class ProtocolLEDENET9Byte extends ProtocolLEDENET8Byte
 // The newer LEDENET protocol with checksums that uses 9 bytes to set state.
 class ProtocolLEDENET9ByteDimmableEffects extends ProtocolLEDENET9Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_9BYTE_DIMMABLE_EFFECTS;
     }
@@ -578,7 +632,7 @@ class ProtocolLEDENET9ByteDimmableEffects extends ProtocolLEDENET9Byte
     // The bytes to send for a preset pattern.
     public function ConstructPresetPattern($pattern, $speed, $brightness)
     {
-        $delay = $this->SpeedToDelay($speed);
+        $delay = self::SpeedToDelay($speed);
         $msg = [0x38, $pattern, $delay, $brightness];
         return $this->ConstructMessage($msg);
     }
@@ -587,8 +641,8 @@ class ProtocolLEDENET9ByteDimmableEffects extends ProtocolLEDENET9Byte
 // The newer LEDENET addressable protocol A1
 class ProtocolLEDENETAddressableA1 extends ProtocolLEDENET9Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_ADDRESSABLE_A1;
     }
@@ -611,8 +665,8 @@ class ProtocolLEDENETAddressableA1 extends ProtocolLEDENET9Byte
 // The newer LEDENET addressable protocol A2
 class ProtocolLEDENETAddressableA2 extends ProtocolLEDENET9Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_ADDRESSABLE_A2;
     }
@@ -643,8 +697,8 @@ class ProtocolLEDENETAddressableA2 extends ProtocolLEDENET9Byte
 // The newer LEDENET addressable protocol A3
 class ProtocolLEDENETAddressableA3 extends ProtocolLEDENET9Byte
 {
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_ADDRESSABLE_A3;
     }
@@ -713,8 +767,8 @@ class ProtocolLEDENETCCT extends ProtocolLEDENET9Byte
 {
     private $MIN_BRIGHTNESS = 2;
 
-    // The name of the protocol.
-    public function Name()
+    // The id of the protocol.
+    public function Id()
     {
         return PROTOCOL_LEDENET_CCT;
     }
@@ -750,4 +804,22 @@ class ProtocolLEDENETCCT extends ProtocolLEDENET9Byte
  */
 trait MagicHelper
 {
+    /**
+    * Extract preset profile name from protocol.
+    *
+    * @param int $value protocol number
+    * @return string Preset Profile Name.
+    */
+   private function GetPatternProfile(int $value): string
+   {
+        $pattern = 'MHC.Preset';
+       foreach (MAGIC_HOME_PATTERN as $profile => $protocols) {
+            if (in_array($value, $protocols)) {
+                $pattern = $profile;
+                break;
+           }
+       }
+       return $pattern;
+   }
+
 }

@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20220630-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221231-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
 
@@ -10,18 +10,61 @@ IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Ho
 
 ## Inhaltverzeichnis
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Installation](#3-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
-8. [Versionshistorie](#8-versionshistorie)
+1. [Funktionsumfang](#user-content-1-funktionsumfang)
+2. [Voraussetzungen](#user-content-2-voraussetzungen)
+3. [Installation](#user-content-3-installation)
+4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
+5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
+6. [WebFront](#user-content-6-webfront)
+7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
+8. [Versionshistorie](#user-content-8-versionshistorie)
 
 ### 1. Funktionsumfang
 
 Das Modul dient zur Ansteuerung von LED Stripes mittels eines WiFi LED Controllers des Herstellers Magic Home.
+
+Folgende Controller werden unterstützt:
+
+* Original LEDENET
+* UFO LED WiFi Controller
+* RGBW Controller
+* RGBCW Controller
+* RGB Controller with MIC
+* CCT Ceiling Light
+* Smart Switch 1c
+* Floor Lamp
+* Christmas Light
+* Magnetic Light CCT
+* Magnetic Light Dimable
+* Plant Light
+* Smart Socket 2 USB
+* Christmas Light
+* Spray Light
+* Table Light CCT
+* Smart Bulb Dimmable
+* RGB/WW/CW Controller
+* RGB Controller
+* Smart Bulb RGBCW
+* Single Channel Controller
+* Smart Bulb RGBW
+* Smart Bulb CCT
+* Downlight RGBW
+* CCT Controller
+* Smart Switch 1C
+* Smart Switch 1c Watt
+* Smart Switch 2c
+* Smart Switch 4c
+* Smart Socket 1c
+* RGB Symphony v1
+* RGB Symphony v2
+* RGB Symphony v3
+* Digital Light
+* Ceiling Light
+* Ceiling Light Assist
+
+Erfolgreiche Test wurde mit den Controllern _'RGB Controller'_, _'RGB Symphony v1'_ und _'RGB Symphony v2'_ durchgeführt.
+Weiterführende Möglichkeiten und Funktionen wie Warmweiß, Music usw. konnten aus Mangel an Hardware noch nicht implementiert werden.
+Aufgrund der technischen Einschränkung von 128 Profilassoziationen werden bei den 'Adressierbaren Effekten' nicht alle 300 Modi unterstützt.
 
 ### 2. Voraussetzungen
 
@@ -35,22 +78,42 @@ Das Modul dient zur Ansteuerung von LED Stripes mittels eines WiFi LED Controlle
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
-* Unter "Instanz hinzufügen" ist das _Magic Home Controller_-Modul (Alias: _LED Controller_) unter dem Hersteller _'(Geräte)'_ aufgeführt.
+#### Magic Home Discovery
+
+Die Gerätesuche ist über die Glocke oben rechts in der Konsole aufrufbar. Dort über "SYSTEM AUSWÄHLEN" kann das
+'Magic Home Discovery'-Modul ausgewählt und installiert werden.
+
+#### Magic Home Controller
+
+Unter "Instanz hinzufügen" ist das _Magic Home Controller_-Modul (Alias: _LED Wifi Controller_, _LED Strips Controller_) unter dem Hersteller _'Magic Home'_ aufgeführt.
 
 __Konfigurationsseite__:
 
-Die Konfiguration beinhaltet die Zuweisung der IP-Adresse und der Auswahl der Farbkanal-Reihenfolge (RGB-Pins).  
-Derzeit werden Stripes mit der Reihenfolge GRB (Gelb, Rot, Blau) und BRG (Blau, Rot, Gelb) unterstützt.  
+Die Konfiguration beinhaltet die Anzeige der Geräteinformationen (IP-Adresse usw.) und die Auswahl der Farbkanal-Reihenfolge (RGB-Pins).  
 Die Reihenfolge der Pins beginnt immer ausgehend vom GND-Pin (12V Pin).
 
 Einstellungsbereich:
 
-> Einstellungen ...
+> Geräteinformationen ...
 
 Name               | Beschreibung
 ------------------ | ---------------------------------
-WiFi Controller IP | IP-Adresse des Controlers im lokalen WLAN (zb. 192.168.0.10)
-RGB Pin Belegung   | Reihenfolge der Farb-Pins (GRB oder BRG), Standard ist GRB
+Controller-Typ     | Typbezeichnung des Conrtolers (27 mögliche Typen)
+Controller-Modell  | Modellbezeichnung des Conrtolers
+Controller-IP      | IP-Adresse des Controlers im lokalen WLAN (zb. 192.168.0.10)
+Controller-ID      | ID des Controlers (MAC-Adresse des Controlers)
+
+> Erweiterte Einstellungen ...
+
+Name               | Beschreibung
+------------------ | ---------------------------------
+RGB Pin Belegung   | Reihenfolge der Farb-Kanäle(Pins), Standard ist RGB
+
+Aktionsbereich:
+
+Aktion            | Beschreibung
+----------------- | ------------------------------------------------------------
+SYNCRONISIEREN    | Auslesen des internen Controler-Setups und Abgleich der betroffenen Statusvariablen.
 
 ### 5. Statusvariablen und Profile
 
@@ -58,9 +121,17 @@ Ident         | Name                | Typ       |  Profil                      |
 ------------- | ------------------- | --------- | ---------------------------- | -------------------------------------------------------
 Brightness    | Helligkeit          | Integer   | ~Intensity.100               | Helligkeitswert von 0 bis 100%
 Color         | Farbe               | Integer   | ~HexColor                    | Farbwert
-Mode          | Modus               | Integer   | MHC.ModeGRB oder MHC.ModeBRG | Manueller Farbmodus oder vordefinierter Funktionsmodus
+Mode          | Modus               | Integer   | MHC.Preset, MHC.Original oder MHC.Addressable | Manueller Farbmodus oder vordefinierter Funktionsmodus (Pattern/Effekte)
 Power         | Aktiv               | Boolean   | ~Switch                      | An/Aus Schalter
 Speed         | Geschwindigkeit     | Integer   | ~Intensity.100               | Geschwindigkeitswert von 0 bis 100%
+
+Folgende Profile werden angelegt:
+
+Name            | Typ       | Beschreibung
+--------------- | --------- | -------------------------------------------------
+MHC.Preset      | Integer   | Voreingestelltes Muster (0=Farbmodus, 37 ... 56 = 19 Muster)
+MHC.Original    | Integer   | Original Muster (0=Farbmodus, Werte zwischen 1 ... 300 => 126 ausgwählte Effekte)
+MHC.Addressable | Integer   | Adressierbare Muster (0=Farbmodus, 1 ... 102, 255 => 103 Effekte)
 
 ### 6. WebFront
 
@@ -87,18 +158,27 @@ void MHC_SetMode(int $instanzID, int $mode);
 Setzt den Anzeigemodus auf auf $mode. Die Funktion liefert keinerlei Rückgabewert.
 
 ```php
-void MHC_Power(int $instanzID, bool $power);
+void MHC_SetPower(int $instanzID, bool $power);
 ```
 
 Schaltet den Controller Ein(true) bzw Aus(false). Die Funktion liefert keinerlei Rückgabewert.
 
+```php
+void MHC_SetSpeed(int $instanzID, int $speed);
+```
+
+Setzt die Geschwindigkeit auf $speed. Die Funktion liefert keinerlei Rückgabewert.
+
 ### 8. Versionshistorie
 
-v3.0.20220630
+v3.0.20221231
 
 * _NEU_: Discovery Modul hinzugefügt
-* _FIX_: Controller Modul umbenannt
 * _NEU_: Erkennen von 27 verschiedene Controllern
+* _NEU_: Neues Profilehandling für Effekte (Mode)
+* _NEU_: Auslesen des aktuellen Controller-Setups (Sync)
+* _FIX_: Pinbelegung der Farbknäle erweitert und systemweit angewendet
+* _FIX_: Controller Modul umbenannt
 
 v2.0.20210701
 
@@ -125,9 +205,11 @@ v1.0.20180415
 
 ## Danksagung
 
-Dieses Modul basiert auf dem Modul von ...
+Ich möchte mich für die Unterstützung bei der Entwicklung dieses Moduls bedanken bei ...
 
-* _Spoosie_ : Modul _KH\_LEDWiFiController_ <https://github.com/Spoosie/KH_LEDWiFiController>
+* _@Spoosie_ : Für die Basisarbeit in seinem Modul (KH\_LEDWiFiController)
+* _@Thorsten79_ : Für die Unterstützung und Bereitstellung der 2 Controler (_'RGB Symphony v1'_ & _'RGB Symphony v2'_)
+* _@Brutus_, _@lcnrookie_ und _@uwer_ : Als die Unterstützung als Tester
 
 Vielen Dank für die hervorragende und tolle Arbeit!
 
