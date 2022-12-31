@@ -628,7 +628,7 @@ class MagicHomeController extends IPSModule
 
         // Check brithness *************************************************************
         $update = false;
-        if($mode == 0) {
+        if ($mode == 0) {
             // (grössten finden; wenn 0 = weiß mit Helligkeit 0; sonst (max-wert/255) * 100)
             $max = max($rx[7], $rx[8], $rx[9]);
             $this->SendDebug(__FUNCTION__, 'Max = ' . $max);
@@ -636,13 +636,12 @@ class MagicHomeController extends IPSModule
             $this->SendDebug(__FUNCTION__, 'Div = ' . $div);
             $brightness = $div * 100;
             $update = true;
-        }
-        elseif(in_array($protocol->Id(), BRIGHTNESS_EFFECTS_PROTOCOLS)) {
+        } elseif (in_array($protocol->Id(), BRIGHTNESS_EFFECTS_PROTOCOLS)) {
             // the red byte holds the brightness during an effect
             $brightness = $rx[7];
             $update = true;
         }
-        if($update) {
+        if ($update) {
             $this->SendDebug(__FUNCTION__, 'Brightness = ' . $brightness);
             if ($brightness > 100) {
                 $brightness = 100;
@@ -650,7 +649,7 @@ class MagicHomeController extends IPSModule
             $this->SetValueInteger('Brightness', intval($brightness));
         }
         // Check color *****************************************************************
-        if($mode == 0) {
+        if ($mode == 0) {
             $channel = $this->ReadPropertyString('RGB');
             $red = $rx[7 + $channel[0]] / $div;
             if ($red < 0) {

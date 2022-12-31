@@ -74,5 +74,4 @@ trait VariableHelper
             IPS_SetDisabled($id, $value);
         }
     }
-
 }

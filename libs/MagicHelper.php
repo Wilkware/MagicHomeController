@@ -64,7 +64,6 @@ const MSG_LENGTHS = [
 const EFFECT_CUSTOM_CODE = 0x60;
 const PRESET_MUSIC_MODE = 0x62;
 
-
 # Protocol id's
 const PROTOCOL_LEDENET_ORIGINAL = 0;
 const PROTOCOL_LEDENET_9BYTE = 1;
@@ -239,7 +238,8 @@ abstract class ProtocolBase
     }
 
     // The name of the protocol.
-    public function Name() {
+    public function Name()
+    {
         return CLASS_PROTOCOL[$this->Id()];
     }
 
@@ -805,21 +805,20 @@ class ProtocolLEDENETCCT extends ProtocolLEDENET9Byte
 trait MagicHelper
 {
     /**
-    * Extract preset profile name from protocol.
-    *
-    * @param int $value protocol number
-    * @return string Preset Profile Name.
-    */
-   private function GetPatternProfile(int $value): string
-   {
+     * Extract preset profile name from protocol.
+     *
+     * @param int $value protocol number
+     * @return string Preset Profile Name.
+     */
+    private function GetPatternProfile(int $value): string
+    {
         $pattern = 'MHC.Preset';
-       foreach (MAGIC_HOME_PATTERN as $profile => $protocols) {
+        foreach (MAGIC_HOME_PATTERN as $profile => $protocols) {
             if (in_array($value, $protocols)) {
                 $pattern = $profile;
                 break;
-           }
-       }
-       return $pattern;
-   }
-
+            }
+        }
+        return $pattern;
+    }
 }
