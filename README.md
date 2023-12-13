@@ -1,7 +1,7 @@
 # MHC - Magic Home Controller
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Symcon%20Version-6.0-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg)](https://www.symcon.de/produkt/)
 [![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221231-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
@@ -177,7 +177,8 @@ v3.0.20221231
 * _NEU_: Erkennen von 27 verschiedene Controllern
 * _NEU_: Neues Profilehandling für Effekte (Mode)
 * _NEU_: Auslesen des aktuellen Controller-Setups (Sync)
-* _FIX_: Pinbelegung der Farbknäle erweitert und systemweit angewendet
+* _NEU_: Kompatibilität auf IPS 6.4 hoch gesetzt
+* _FIX_: Pinbelegung der Farbkanäle erweitert und systemweit angewendet
 * _FIX_: Controller Modul umbenannt
 
 v2.0.20210701
@@ -221,7 +222,7 @@ Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den let
 
 ## Spenden
 
-Die Software ist für die nicht kommzerielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich freuen.
+Die Software ist für die nicht kommerzielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich freuen.
 
 [![PayPal](https://img.shields.io/badge/PayPal-spenden-00457C.svg?style=for-the-badge&logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
 
