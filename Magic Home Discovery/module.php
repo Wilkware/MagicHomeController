@@ -68,34 +68,69 @@ class MagicHomeDiscovery extends IPSModule
     public function GetConfigurationForm()
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $controllers = $this->DiscoverController();
+        // Version check
+        $version = (float) IPS_GetKernelVersion();
         // Save location
         $location = $this->GetPathOfCategory($this->ReadPropertyInteger('TargetCategory'));
+        // Enable or disable "TargetCategory" for 6.x
+        if ($version < 7) {
+            $form['elements'][2]['visible'] = true;
+        }
+        // All installed devices
+        $installed = [];
+        foreach (IPS_GetInstanceListByModuleID(self::MODUL_CONTROLLER_ID) as $instance) {
+            $installed[IPS_GetProperty($instance, 'MAC')] = $instance;
+        }
+        // Discover controlers
+        $controllers = $this->DiscoverController();
+        // Collect all values
+        $values = [];
         // Build configuration list values
-        if (!empty($controllers)) {
-            foreach ($controllers as $controller) {
-                $this->SendDebug(__FUNCTION__, $controller);
-                // only if we found the type of controller
-                if (isset($controller['number'])) {
-                    $values[] = [
-                        'instanceID'    => $this->GetControlerInstances($controller['tcpip']),
-                        'tcpip'         => $controller['tcpip'],
-                        'macid'         => $controller['mac'],
-                        'model'         => $controller['model'],
-                        'type'          => MAGIC_HOME_CONTROLLER[$controller['number']][0],
-                        'info'          => $controller['info'],
-                        'version'       => $controller['version'],
-                        'firmware'      => $controller['firmware'],
-                        'create'        => [
-                            [
-                                'moduleID'      => self::MODUL_CONTROLLER_ID,
-                                'configuration' => ['TCPIP' => $controller['tcpip'], 'MAC' => $controller['mac'], 'MODEL' => $controller['model'], 'TYPE' => $controller['number']],
-                                'location'      => $location,
-                            ],
+        foreach ($controllers as $controller) {
+            $this->SendDebug(__FUNCTION__, $controller);
+            // only if we found the type of controller
+            if (isset($controller['number'])) {
+                $value = [
+                    'tcpip'         => $controller['tcpip'],
+                    'macid'         => $controller['mac'],
+                    'model'         => $controller['model'],
+                    'type'          => MAGIC_HOME_CONTROLLER[$controller['number']][0],
+                    'info'          => $controller['info'],
+                    'version'       => $controller['version'],
+                    'firmware'      => $controller['firmware'],
+                    'create'        => [
+                        [
+                            'moduleID'      => self::MODUL_CONTROLLER_ID,
+                            'configuration' => ['TCPIP' => $controller['tcpip'], 'MAC' => $controller['mac'], 'MODEL' => $controller['model'], 'TYPE' => $controller['number']],
+                            'location'      => ($version < 7) ? $location : [],
                         ],
-                    ];
+                    ],
+                ];
+                if (isset($installed[$controller['mac']])) {
+                    $value['instanceID'] = $installed[$controller['mac']];
+                    // remove it from the list
+                    unset($installed[$controller['mac']]);
+                } else {
+                    $value['instanceID'] = 0;
                 }
+                $values[] = $value;
             }
+        }
+        foreach ($installed as $mac => $instance) {
+            // However, if an controller is not a discovered device
+            $values[] = [
+                'macid'         => $mac,
+                'tcpip'         => IPS_GetProperty($instance, 'TCPIP'),
+                'model'         => IPS_GetProperty($instance, 'MODEL'),
+                'type'          => MAGIC_HOME_CONTROLLER[IPS_GetProperty($instance, 'TYPE')][0],
+                'info'          => '',
+                'version'       => ' - ',
+                'firmware'      => ' - ',
+                'instanceID'    => $instance,
+            ];
+        }
+        // Set available values
+        if (!empty($values)) {
             $form['actions'][0]['values'] = $values;
         }
         return json_encode($form);
