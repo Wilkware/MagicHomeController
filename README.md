@@ -1,10 +1,10 @@
 # MHC - Magic Home Controller
 
-[![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Version](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221231-orange.svg)](https://github.com/Wilkware/IPSymconMHC)
-[![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Actions](https://github.com/Wilkware/IPSymconMHC/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconMHC/actions)
+[![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221231-orange.svg?style=flat-square)](https://github.com/Wilkware/MagicHomeController)
+[![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/MagicHomeController/style.yml?branch=main&label=CheckStyle&style=flat-square)](https://github.com/Wilkware/MagicHomeController/actions)
 
 IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Home_.
 
@@ -15,7 +15,7 @@ IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Ho
 3. [Installation](#user-content-3-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
-6. [WebFront](#user-content-6-webfront)
+6. [Visualisierung](#user-content-6-visualisierung)
 7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
 8. [Versionshistorie](#user-content-8-versionshistorie)
 
@@ -68,13 +68,13 @@ Aufgrund der technischen Einschränkung von 128 Profilassoziationen werden bei d
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 6.0
+* IP-Symcon ab Version 6.4
 
 ### 3. Installation
 
 * Über den Modul Store das Modul 'Magic Home Controller' installieren.
 * Alternativ Über das Modul-Control folgende URL hinzufügen.  
-`https://github.com/Wilkware/IPSymconMHC` oder `git://github.com/Wilkware/IPSymconMHC.git`
+`https://github.com/Wilkware/MagicHomeController` oder `git://github.com/Wilkware/MagicHomeController.git`
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
@@ -133,9 +133,9 @@ MHC.Preset      | Integer   | Voreingestelltes Muster (0=Farbmodus, 37 ... 56 = 
 MHC.Original    | Integer   | Original Muster (0=Farbmodus, Werte zwischen 1 ... 300 => 126 ausgwählte Effekte)
 MHC.Addressable | Integer   | Adressierbare Muster (0=Farbmodus, 1 ... 102, 255 => 103 Effekte)
 
-### 6. WebFront
+### 6. Visualisierung
 
-Man kann die Statusvariaben direkt im WebFront verlinken.
+Man kann die Statusvariaben direkt in die Visualisierung verlinken.
 
 ### 7. PHP-Befehlsreferenz
 

@@ -294,9 +294,9 @@ class MagicHomeController extends IPSModule
         $this->RegisterPropertyString('RGB', '012');
 
         // Variablen Profile einrichten
-        $this->RegisterProfile(vtInteger, 'MHC.Preset', 'Bulb', '', '', 0, 0, 0, 0, $this->assoPreset);
-        $this->RegisterProfile(vtInteger, 'MHC.Original', 'Bulb', '', '', 0, 0, 0, 0, $this->assoOriginal);
-        $this->RegisterProfile(vtInteger, 'MHC.Addressable', 'Bulb', '', '', 0, 0, 0, 0, $this->assoAddressable);
+        $this->RegisterProfileInteger('MHC.Preset', 'Bulb', '', '', 0, 0, 0, $this->assoPreset);
+        $this->RegisterProfileInteger('MHC.Original', 'Bulb', '', '', 0, 0, 0, $this->assoOriginal);
+        $this->RegisterProfileInteger('MHC.Addressable', 'Bulb', '', '', 0, 0, 0, $this->assoAddressable);
 
         // Variablen erzeugen
         $varID = $this->RegisterVariableBoolean('Power', $this->Translate('Power'), '~Switch', 0);
