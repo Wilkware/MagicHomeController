@@ -1,23 +1,25 @@
 # MHC - Magic Home Controller
 
+[![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/mhc/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Version](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
 [![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221231-orange.svg?style=flat-square)](https://github.com/Wilkware/MagicHomeController)
 [![Version](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/MagicHomeController/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/Wilkware/MagicHomeController/actions)
 
-IP-Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Home_.
+Symcon Modul für die Ansteuerung von WiFi LED Controller der Firma _Magic Home_.
 
 ## Inhaltverzeichnis
 
 1. [Funktionsumfang](#user-content-1-funktionsumfang)
 2. [Voraussetzungen](#user-content-2-voraussetzungen)
 3. [Installation](#user-content-3-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
-6. [Visualisierung](#user-content-6-visualisierung)
-7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
-8. [Versionshistorie](#user-content-8-versionshistorie)
+4. [Einrichtung](#user-content-4-einrichtung)
+5. [Statusvariablen](#user-content-5-statusvariablen)
+6. [Darstellungen](#user-content-6-darstellungen)
+7. [Visualisierung](#user-content-7-visualisierung)
+8. [Befehlsreferenz](#user-content-8-befehlsreferenz)
+9. [Versionshistorie](#user-content-9-versionshistorie)
 
 ### 1. Funktionsumfang
 
@@ -68,15 +70,15 @@ Aufgrund der technischen Einschränkung von 128 Profilassoziationen werden bei d
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 6.4
+* Symcon ab Version 6.4
 
 ### 3. Installation
 
-* Über den Modul Store das Modul 'Magic Home Controller' installieren.
-* Alternativ Über das Modul-Control folgende URL hinzufügen.  
+* Über den Modul Store die Bibliothek _Magic Home Controller_ installieren.
+* Alternativ über das Modul Control folgende URL hinzufügen.  
 `https://github.com/Wilkware/MagicHomeController` oder `git://github.com/Wilkware/MagicHomeController.git`
 
-### 4. Einrichten der Instanzen in IP-Symcon
+### 4. Einrichtung
 
 #### Magic Home Discovery
 
@@ -85,7 +87,7 @@ Die Gerätesuche ist über die Glocke oben rechts in der Konsole aufrufbar. Dort
 
 #### Magic Home Controller
 
-Unter "Instanz hinzufügen" ist das _Magic Home Controller_-Modul (Alias: _LED Wifi Controller_, _LED Strips Controller_) unter dem Hersteller _'Magic Home'_ aufgeführt.
+* Unter 'Instanz hinzufügen' ist das _Magic Home Controller_-Modul (Alias: _LED Wifi Controller_, _LED Strips Controller_) unter dem Hersteller 'Magic Home' aufgeführt.
 
 __Konfigurationsseite__:
 
@@ -115,29 +117,43 @@ Aktion            | Beschreibung
 ----------------- | ------------------------------------------------------------
 SYNCRONISIEREN    | Auslesen des internen Controler-Setups und Abgleich der betroffenen Statusvariablen.
 
-### 5. Statusvariablen und Profile
+### 5. Statusvariablen
 
-Ident         | Name                | Typ       |  Profil                      | Beschreibung
-------------- | ------------------- | --------- | ---------------------------- | -------------------------------------------------------
-Brightness    | Helligkeit          | Integer   | ~Intensity.100               | Helligkeitswert von 0 bis 100%
-Color         | Farbe               | Integer   | ~HexColor                    | Farbwert
-Mode          | Modus               | Integer   | MHC.Preset, MHC.Original oder MHC.Addressable | Manueller Farbmodus oder vordefinierter Funktionsmodus (Pattern/Effekte)
-Power         | Aktiv               | Boolean   | ~Switch                      | An/Aus Schalter
-Speed         | Geschwindigkeit     | Integer   | ~Intensity.100               | Geschwindigkeitswert von 0 bis 100%
+Die Statusvariablen werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
-Folgende Profile werden angelegt:
+Name                 | Typ     | Beschreibung
+-------------------- | ------- | ------------------------------
+Aktiv                | Boolean | Ein- bzw. Ausschalten des Controllers
+Farbe                | Integer | Farbwert
+Geschwindigkeit      | Integer | Geschwindigkeit des Musters bzw. Effekts
+Helligkeit           | Integer | Helligkeitswert
+Modus                | Integer | Manueller Farbmodus oder vordefinierter Funktionsmodus (Muster/Effekte)
 
-Name            | Typ       | Beschreibung
---------------- | --------- | -------------------------------------------------
-MHC.Preset      | Integer   | Voreingestelltes Muster (0=Farbmodus, 37 ... 56 = 19 Muster)
-MHC.Original    | Integer   | Original Muster (0=Farbmodus, Werte zwischen 1 ... 300 => 126 ausgwählte Effekte)
-MHC.Addressable | Integer   | Adressierbare Muster (0=Farbmodus, 1 ... 102, 255 => 103 Effekte)
+### 6. Darstellungen
 
-### 6. Visualisierung
+Die Darstellungen werden direkt an den Statusvariablen hinterlegt, es werden keine Profile angelegt.
+
+Variable             | Darstellung   | Werte
+-------------------- | ------------- | ------------------------------
+Aktiv                | Schalter      | An / Aus
+Farbe                | Farbe         | Farbwert (RGB)
+Geschwindigkeit      | Schieberegler | 0 – 100 % (Schrittweite 1)
+Helligkeit           | Schieberegler | 0 – 100 % (Schrittweite 1)
+Modus                | Aufzählung    | abhängig vom Controller-Typ (siehe unten)
+
+Die Werte der Variable 'Modus' richten sich nach dem Controller-Typ:
+
+Muster               | Werte
+-------------------- | ------------------------------
+Voreingestellt       | Manuell (0), 20 voreingestellte Muster (37 – 56)
+Original             | Manuell (0), 125 ausgewählte Effekte (1 – 300)
+Adressierbar         | Manuell (0), 103 Effekte (1 – 102, 255)
+
+### 7. Visualisierung
 
 Man kann die Statusvariaben direkt in die Visualisierung verlinken.
 
-### 7. PHP-Befehlsreferenz
+### 8. Befehlsreferenz
 
 ```php
 void MHC_SetBrightness(int $instanzID, int $brightness);
@@ -169,7 +185,7 @@ void MHC_SetSpeed(int $instanzID, int $speed);
 
 Setzt die Geschwindigkeit auf $speed. Die Funktion liefert keinerlei Rückgabewert.
 
-### 8. Versionshistorie
+### 9. Versionshistorie
 
 v3.0.20221231
 
@@ -216,7 +232,7 @@ Vielen Dank für die hervorragende und tolle Arbeit!
 
 ## Entwickler
 
-Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der IP-Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
+Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
 
 [![GitHub](https://img.shields.io/badge/GitHub-@wilkware-181717.svg?style=for-the-badge&logo=github)](https://wilkware.github.io/)
 
