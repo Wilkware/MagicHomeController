@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>MagicHomeController</title>
+    <meta charset="utf-8" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        html,
+        body {
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #card {
+            width: 100%;
+            height: 100%;
+            padding: var(--margin-top) var(--margin-side) var(--margin-bottom);
+        }
+
+        #content {
+            width: 100%;
+            height: 100%;
+            container-type: size;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ── Grid: gauge on top, buttons at the bottom ───────────────────── */
+        .grid {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            grid-template-columns: 1fr;
+            grid-template-rows: 80% 20%;
+            grid-template-areas:
+                "center"
+                "bottom";
+        }
+
+        .center {
+            grid-area: center;
+            container-type: size;
+        }
+
+        .bottom {
+            grid-area: bottom;
+            container-type: size;
+        }
+
+        .grid>div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            min-width: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* ── Gauge ───────────────────────────────────────────────────────── */
+        .mhc-gauge {
+            --arc-color: var(--accent-color);
+            position: relative;
+            overflow: hidden;
+            width: min(100cqw, 130.43cqh);
+            aspect-ratio: 240 / 184;
+            container-type: inline-size;
+        }
+
+        .mhc-gauge-track {
+            stroke: color-mix(in srgb, var(--content-color) 10%, transparent);
+        }
+
+        #gauge-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1;
+            touch-action: none;
+            cursor: default;
+        }
+
+        #arc-fill {
+            stroke: var(--arc-color);
+        }
+
+        #arc-hitzone {
+            cursor: pointer;
+        }
+
+        #dot-group {
+            cursor: grab;
+        }
+
+        #dot-group.dragging {
+            cursor: grabbing;
+        }
+
+        #dot,
+        #dot-glow {
+            fill: var(--arc-color);
+        }
+
+        .readonly #arc-fill,
+        .readonly #dot-group {
+            opacity: 0.35;
+        }
+
+        .readonly #arc-hitzone,
+        .readonly #dot-group {
+            pointer-events: none;
+        }
+
+        .mhc-gauge-info {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: clamp(16px, 20cqw, 64px);
+            pointer-events: none;
+        }
+
+        .mhc-power-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: all;
+            padding: clamp(6px, 4.5cqw, 14px);
+            margin-bottom: clamp(8px, 7cqw, 22px);
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--content-color) 6%, transparent);
+            transition: background 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mhc-power-button:hover {
+            background: color-mix(in srgb, var(--content-color) 10%, transparent);
+        }
+
+        /* icons.js replaces <i> by <svg>, so both are styled */
+        .mhc-power-button i,
+        .mhc-power-button svg {
+            font-size: clamp(18px, 14cqw, 40px);
+            color: color-mix(in srgb, var(--content-color) 30%, transparent);
+            transition: color 0.18s, filter 0.18s;
+        }
+
+        .mhc-power-button.on {
+            background: color-mix(in srgb, var(--arc-color) 15%, transparent);
+            box-shadow: 0 0 clamp(8px, 8cqw, 24px) color-mix(in srgb, var(--arc-color) 45%, transparent);
+        }
+
+        .mhc-power-button.on i,
+        .mhc-power-button.on svg {
+            color: var(--arc-color);
+            filter: drop-shadow(0 0 4px color-mix(in srgb, var(--arc-color) 70%, transparent));
+        }
+
+        .mhc-gauge-value {
+            font-size: clamp(22px, 17cqw, 52px);
+            line-height: 1;
+            color: var(--content-color);
+        }
+
+        .mhc-gauge-unit {
+            font-size: clamp(14px, 8cqw, 20px);
+            opacity: 0.5;
+            vertical-align: super;
+            margin-left: 1px;
+        }
+
+        .mhc-gauge-label {
+            max-width: 70%;
+            margin-top: clamp(2px, 2cqw, 8px);
+            font-size: clamp(6.5px, 3.2cqw, 10px);
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--content-color);
+            opacity: 0.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mhc-gauge-label.warning {
+            color: var(--color-warning, #F35A2C);
+            opacity: 1;
+        }
+
+        /* ── Color wheel ─────────────────────────────────────────────────── */
+        .mhc-wheel {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            height: 96%;
+            aspect-ratio: 1;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            touch-action: none;
+            cursor: crosshair;
+            background:
+                radial-gradient(closest-side, #fff 36%, rgba(255, 255, 255, 0) 100%),
+                conic-gradient(#f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+        }
+
+        .mhc-wheel-dot {
+            position: absolute;
+            width: 11%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--wheel-color) 25%, transparent);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .mhc-wheel-pick {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 30%;
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid var(--card-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mhc-wheel-pick i,
+        .mhc-wheel-pick svg {
+            font-size: clamp(10px, 6cqw, 20px);
+            color: #fff;
+            filter: drop-shadow(0 0 1px rgba(0, 0, 0, .6));
+            pointer-events: none;
+        }
+
+        .mhc-wheel-pick input[type="color"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ── Buttons: bottom ─────────────────────────────────────────────── */
+        .mhc-button-row {
+            display: flex;
+            gap: clamp(0px, 1cqw, 6px);
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .mhc-button {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(1px, 3cqh, 4px);
+            cursor: pointer;
+            padding: clamp(2px, 4cqh, 6px) clamp(3px, 2cqw, 10px);
+            border-radius: clamp(5px, 4cqh, 10px);
+            min-width: clamp(24px, 12cqw, 56px);
+            transition: background 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mhc-button:hover {
+            background: color-mix(in srgb, var(--content-color) 6%, transparent);
+        }
+
+        /* Functions which are not available: no hover, no click */
+        .mhc-button.disabled {
+            opacity: 0.35;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .mhc-icon {
+            display: flex;
+        }
+
+        .mhc-button i,
+        .mhc-button svg {
+            font-size: clamp(12px, 50cqh, 22px);
+            color: color-mix(in srgb, var(--content-color) 20%, transparent);
+            transition: color 0.18s;
+        }
+
+        .mhc-button-label {
+            font-size: clamp(7px, 12cqh, 9px);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--content-color);
+            opacity: 0.45;
+            white-space: nowrap;
+            transition: color 0.18s, opacity 0.18s;
+        }
+
+        /* Labels only if there is enough room */
+        @container (max-height: 34px) {
+            .mhc-button-label {
+                display: none;
+            }
+        }
+
+        /* Native select lies invisible above the mode button */
+        .mhc-button select {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .mhc-button select option {
+            color: var(--content-color);
+            background: var(--card-color);
+        }
+
+        .spin i,
+        .spin svg {
+            animation: spin .8s linear;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script src="/icons.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="card">
+        <div id="content">
+            <div class="grid">
+                <div class="center">
+                    <div class="mhc-gauge" id="gauge">
+                        <svg id="gauge-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+                            <path id="arc-bg" fill="none" stroke-width="6" stroke-linecap="round"
+                                class="mhc-gauge-track" />
+                            <path id="arc-fill" fill="none" stroke-width="6" stroke-linecap="round" />
+                            <path id="arc-hitzone" fill="none" stroke="transparent" stroke-width="30"
+                                stroke-linecap="round" />
+                            <g id="dot-group">
+                                <circle id="dot-glow" r="17" opacity="0.12" />
+                                <circle id="dot" r="10" />
+                            </g>
+                        </svg>
+
+                        <div class="mhc-gauge-info" id="gauge-info">
+                            <div class="mhc-power-button" id="button-power">
+                                <i class="fa-light fa-power-off"></i>
+                            </div>
+                            <div class="mhc-gauge-value">
+                                <span id="value-display">--</span><span class="mhc-gauge-unit">%</span>
+                            </div>
+                            <div class="mhc-gauge-label" id="label-display"></div>
+                        </div>
+
+                        <div class="mhc-wheel hidden" id="wheel">
+                            <div class="mhc-wheel-dot" id="wheel-dot"></div>
+                            <div class="mhc-wheel-pick" id="wheel-pick">
+                                <i class="fa-light fa-eye-dropper"></i>
+                                <input type="color" id="input-color" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom">
+                    <div class="mhc-button-row">
+                        <div class="mhc-button" id="button-brightness">
+                            <i class="fa-light fa-sun"></i>
+                            <span class="mhc-button-label" id="label-brightness"></span>
+                        </div>
+                        <div class="mhc-button" id="button-second">
+                            <span class="mhc-icon" id="icon-second" data-icon="fa-light fa-palette"><i class="fa-light fa-palette"></i></span>
+                            <span class="mhc-button-label" id="label-second"></span>
+                        </div>
+                        <div class="mhc-button" id="button-mode">
+                            <i class="fa-light fa-wand-magic-sparkles"></i>
+                            <span class="mhc-button-label" id="label-mode"></span>
+                            <select id="select-mode"></select>
+                        </div>
+                        <div class="mhc-button" id="button-sync">
+                            <i class="fa-light fa-arrows-rotate"></i>
+                            <span class="mhc-button-label" id="label-sync"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── INIT: set root/style variables ───────────────────────────────────
+        const p = new URLSearchParams(location.search);
+        const root = document.documentElement;
+        const m = {
+            margintop: ['--margin-top'],
+            marginside: ['--margin-side'],
+            marginbottom: ['--margin-bottom']
+        };
+        for (const k in m) {
+            const v = p.get(k);
+            if (!v) continue; m[k].forEach(c => root.style.setProperty(c, v));
+        }
+
+        // ── STATE: ───────────────────────────────────────────────────────────
+        let state = { power: false, color: '#ffffff', brightness: 0, speed: 0, mode: 0, dimmable: false, reachable: true };
+        let modes = [];
+        let view = 'brightness';
+        let dragValue = null;
+
+        // ── GAUGE: arc geometry (viewBox 240×240, r=100) 150° → 240° clockwise
+        const CX = 120, CY = 120, R = 100;
+        const ARC_START = 150, ARC_SPAN = 240;
+        const WHEEL_INNER = 0.36;
+        const toRad = d => d * Math.PI / 180;
+        const toDeg = r => r * 180 / Math.PI;
+
+        function polarXY(deg) {
+            const a = toRad(deg);
+            return { x: CX + R * Math.cos(a), y: CY + R * Math.sin(a) };
+        }
+        function svgArc(s, span) {
+            if (span <= 0.01) { const p = polarXY(s); return `M ${p.x.toFixed(2)} ${p.y.toFixed(2)}`; }
+            if (span >= 360) span = 359.99;
+            const a = polarXY(s), b = polarXY(s + span);
+            return `M ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${R} ${R} 0 ${span > 180 ? 1 : 0} 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
+        }
+
+        // ── COLOR: ───────────────────────────────────────────────────────────
+        const hexToRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+        const rgbToHex = (r, g, b) => '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+
+        function rgbToHs(r, g, b) {
+            const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+            let h = 0;
+            if (d > 0) {
+                if (max === r) h = ((g - b) / d) % 6;
+                else if (max === g) h = (b - r) / d + 2;
+                else h = (r - g) / d + 4;
+                h = (h * 60 + 360) % 360;
+            }
+            return [h, max === 0 ? 0 : d / max];
+        }
+        function hsToHex(h, s) {
+            const f = n => { const k = (n + h / 60) % 6; return 255 * (1 - s * Math.max(0, Math.min(k, 4 - k, 1))); };
+            return rgbToHex(f(5), f(3), f(1));
+        }
+
+        // ── HELPER: ──────────────────────────────────────────────────────────
+        const isManual = () => state.mode === 0;
+        // Second view depends on the mode: color in manual mode, speed during an effect
+        const secondView = () => isManual() ? 'color' : 'speed';
+        const brightnessAllowed = () => isManual() || state.dimmable;
+        const viewEnabled = v => state.reachable && (v !== 'brightness' || brightnessAllowed());
+
+        // ── RENDER: areas ────────────────────────────────────────────────────
+        function renderGauge() {
+            const value = dragValue !== null ? dragValue : (view === 'speed' ? state.speed : state.brightness);
+            const t = Math.max(0, Math.min(100, value)) / 100;
+            const dotPt = polarXY(ARC_START + t * ARC_SPAN);
+            const gauge = document.getElementById('gauge');
+            gauge.style.setProperty('--arc-color', isManual() ? state.color : 'var(--accent-color)');
+            gauge.classList.toggle('readonly', !viewEnabled(view));
+
+            document.getElementById('arc-bg').setAttribute('d', svgArc(ARC_START, ARC_SPAN));
+            document.getElementById('arc-fill').setAttribute('d', t > 0 ? svgArc(ARC_START, t * ARC_SPAN) : '');
+            document.getElementById('arc-hitzone').setAttribute('d', svgArc(ARC_START, ARC_SPAN));
+            document.getElementById('dot-group').setAttribute('transform', `translate(${dotPt.x.toFixed(2)},${dotPt.y.toFixed(2)})`);
+
+            document.getElementById('button-power').classList.toggle('on', state.power);
+            document.getElementById('value-display').textContent = Math.round(value);
+
+            const mode = modes.find(m => m.value === state.mode);
+            const label = document.getElementById('label-display');
+            label.classList.toggle('warning', !state.reachable);
+            if (!state.reachable) {
+                label.textContent = translate('Not reachable');
+            } else if (view === 'speed') {
+                label.textContent = translate('Speed');
+            } else {
+                label.textContent = isManual() ? translate('Brightness') : (mode ? mode.caption : '');
+            }
+        }
+
+        function renderWheel() {
+            const [h, s] = rgbToHs(...hexToRgb(state.color));
+            const d = (WHEEL_INNER + (1 - WHEEL_INNER) * s) * 50;
+            const dot = document.getElementById('wheel-dot');
+            dot.style.left = (50 + d * Math.sin(toRad(h))) + '%';
+            dot.style.top = (50 - d * Math.cos(toRad(h))) + '%';
+            dot.style.background = state.color;
+            dot.style.setProperty('--wheel-color', state.color);
+            document.getElementById('wheel-pick').style.background = state.color;
+        }
+
+        function renderButtons() {
+            const second = secondView();
+            // Recreate the icon, as icons.js has replaced the <i> element by an <svg>
+            const icon = document.getElementById('icon-second');
+            const iconClass = 'fa-light ' + (second === 'color' ? 'fa-palette' : 'fa-gauge-high');
+            if (icon.dataset.icon !== iconClass) {
+                icon.dataset.icon = iconClass;
+                icon.innerHTML = `<i class="${iconClass}"></i>`;
+            }
+            document.getElementById('label-second').textContent = translate(second === 'color' ? 'Color' : 'Speed');
+            document.getElementById('button-second').title = translate(second === 'color' ? 'Select color' : 'Adjust speed');
+            document.getElementById('button-brightness').classList.toggle('disabled', !brightnessAllowed());
+            document.getElementById('select-mode').value = state.mode;
+        }
+
+        function render() {
+            // Fall back to an available view, preferably the brightness
+            if (view === 'brightness' && !brightnessAllowed()) {
+                view = secondView();
+            } else if (view !== 'brightness' && view !== secondView()) {
+                view = brightnessAllowed() ? 'brightness' : secondView();
+            }
+            const colorView = view === 'color';
+            document.getElementById('gauge-svg').classList.toggle('hidden', colorView);
+            document.getElementById('gauge-info').classList.toggle('hidden', colorView);
+            document.getElementById('wheel').classList.toggle('hidden', !colorView);
+            renderGauge();
+            renderWheel();
+            renderButtons();
+        }
+
+        function buildModes() {
+            const select = document.getElementById('select-mode');
+            select.innerHTML = '';
+            modes.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.caption;
+                select.appendChild(opt);
+            });
+        }
+
+        // ── GAUGE: drag brightness / speed ───────────────────────────────────
+        const svgEl = document.getElementById('gauge-svg');
+        let dragging = false;
+
+        function valueFromPtr(e) {
+            const rect = svgEl.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (240 / rect.width);
+            const y = (e.clientY - rect.top) * (240 / rect.height);
+            let d = toDeg(Math.atan2(y - CY, x - CX));
+            d = d < 0 ? d + 360 : d;
+            let rel = ((d - ARC_START) + 360) % 360;
+            // Inside the gap: snap to the nearest end
+            if (rel > ARC_SPAN) rel = rel > (ARC_SPAN + 360) / 2 ? 0 : ARC_SPAN;
+            return Math.round(rel / ARC_SPAN * 100);
+        }
+        function sendValue(value) {
+            const ident = view === 'speed' ? 'Speed' : 'Brightness';
+            state[view === 'speed' ? 'speed' : 'brightness'] = value;
+            dragValue = null;
+            render();
+            requestAction(ident, value);
+        }
+
+        const dotGroup = document.getElementById('dot-group');
+        dotGroup.addEventListener('pointerdown', e => {
+            e.stopPropagation(); dragging = true;
+            dotGroup.classList.add('dragging');
+            dotGroup.setPointerCapture(e.pointerId);
+        });
+        dotGroup.addEventListener('pointermove', e => {
+            if (!dragging) return;
+            dragValue = valueFromPtr(e);
+            renderGauge();
+        });
+        dotGroup.addEventListener('pointerup', () => {
+            if (!dragging) return;
+            dragging = false; dotGroup.classList.remove('dragging');
+            if (dragValue !== null) sendValue(dragValue);
+        });
+        dotGroup.addEventListener('pointercancel', () => {
+            dragging = false; dotGroup.classList.remove('dragging');
+            dragValue = null; renderGauge();
+        });
+        document.getElementById('arc-hitzone').addEventListener('click', e => {
+            if (!dragging) sendValue(valueFromPtr(e));
+        });
+
+        // ── WHEEL: pick color ────────────────────────────────────────────────
+        const wheel = document.getElementById('wheel');
+        let wheelDragging = false;
+
+        function colorFromPtr(e) {
+            const rect = wheel.getBoundingClientRect();
+            const r = rect.width / 2;
+            const dx = e.clientX - (rect.left + r), dy = e.clientY - (rect.top + r);
+            const h = (toDeg(Math.atan2(dx, -dy)) + 360) % 360;
+            const s = Math.max(0, Math.min(1, (Math.hypot(dx, dy) / r - WHEEL_INNER) / (1 - WHEEL_INNER)));
+            return hsToHex(h, s);
+        }
+        function sendColor(hex) {
+            state.color = hex;
+            render();
+            requestAction('Color', parseInt(hex.slice(1), 16));
+        }
+
+        wheel.addEventListener('pointerdown', e => {
+            if (e.target.closest('.mhc-wheel-pick')) return;
+            wheelDragging = true;
+            wheel.setPointerCapture(e.pointerId);
+            state.color = colorFromPtr(e);
+            renderWheel();
+        });
+        wheel.addEventListener('pointermove', e => {
+            if (!wheelDragging) return;
+            state.color = colorFromPtr(e);
+            renderWheel();
+        });
+        wheel.addEventListener('pointerup', () => {
+            if (!wheelDragging) return;
+            wheelDragging = false;
+            sendColor(state.color);
+        });
+        document.getElementById('wheel-pick').addEventListener('click', () => {
+            document.getElementById('input-color').value = state.color;
+        });
+        document.getElementById('input-color').addEventListener('change', e => sendColor(e.target.value));
+
+        // ── BUTTONS: ─────────────────────────────────────────────────────────
+        document.getElementById('button-power').addEventListener('click', () => {
+            state.power = !state.power;
+            render();
+            requestAction('Power', state.power);
+        });
+        document.getElementById('button-brightness').addEventListener('click', () => {
+            view = 'brightness';
+            render();
+        });
+        document.getElementById('button-second').addEventListener('click', () => {
+            view = secondView();
+            render();
+        });
+        document.getElementById('select-mode').addEventListener('change', e => {
+            requestAction('Mode', parseInt(e.target.value));
+        });
+        document.getElementById('button-sync').addEventListener('click', e => {
+            const btn = e.currentTarget;
+            btn.classList.remove('spin');
+            void btn.offsetWidth;
+            btn.classList.add('spin');
+            requestAction('Synchronize', 0);
+        });
+
+        // ── SDK: handleMessage (data transfer) ───────────────────────────────
+        function handleMessage(encodedData) {
+            const decodedData = JSON.parse(encodedData);
+            if (Array.isArray(decodedData.modes)) {
+                modes = decodedData.modes;
+                delete decodedData.modes;
+                buildModes();
+            }
+            Object.assign(state, decodedData);
+            render();
+        }
+
+        // ── INIT: ────────────────────────────────────────────────────────────
+        document.getElementById('label-brightness').textContent = translate('Brightness');
+        document.getElementById('label-mode').textContent = translate('Mode');
+        document.getElementById('label-sync').textContent = translate('Sync');
+        document.getElementById('button-power').title = translate('Power on/off');
+        document.getElementById('button-brightness').title = translate('Adjust brightness');
+        // The invisible select lies above the mode button and receives the hover
+        document.getElementById('select-mode').title = translate('Select mode');
+        document.getElementById('button-sync').title = translate('Synchronize with controller');
+        render();
+    </script>
+</body>
+
+</html>

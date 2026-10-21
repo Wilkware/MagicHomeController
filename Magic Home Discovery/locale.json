@@ -1,14 +1,13 @@
 {
     "translations": {
         "de": {
-            "\nMagic Home Controller Search\n ": "\nMagic Home Controllersuche\n ",
-            "Using this configurator, you can select from the list of currently found contollers and create an instance for a new controller or check an existing instance.": "Mit Hilfe dieser Konfigurators kann man aus der Liste der aktuell gefundenen Steuergeräte auswählen und eine Instanz für ein neuen Controller erstellen oder eine vorhandene Instanz prüfen.",
+            "Magic Home Controller Search": "Magic Home Controllersuche",
+            "Using this configurator, you can select from the list of currently found controllers and create an instance for a new controller or check an existing instance.": "Mit Hilfe dieses Konfigurators kann man aus der Liste der aktuell gefundenen Steuergeräte auswählen und eine Instanz für einen neuen Controller erstellen oder eine vorhandene Instanz prüfen.",
             "Magic Home Controller:": "Magic Home Steuergeräte:",
-            "Target Category:": "Zielkategorie:",
             "IP Address": "IP Adresse",
-            "Model name": "Modellename",
-            "Device state": "Gerätestatus",
-            "Source code, donation and licence ...": "Quellcode, Spende und Lizenz ...",
+            "Model": "Modell",
+            "Type": "Typ",
+            "🎗️ Source code, donation and licence ...": "🎗️ Quellcode, Spende und Lizenz ...",
             "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.": "Die Software ist für die nicht kommerzielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich sehr freuen."
         }
     }

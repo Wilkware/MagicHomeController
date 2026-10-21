@@ -180,5 +180,6 @@ if (!defined('IS_ACTIVE')) {
  * Include all helper trait classes.
  */
 require_once __DIR__ . '/../libs/DebugHelper.php';
+require_once __DIR__ . '/../libs/FormHelper.php';
 require_once __DIR__ . '/../libs/MagicHelper.php';
 require_once __DIR__ . '/../libs/VariableHelper.php';

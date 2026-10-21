@@ -7,7 +7,7 @@
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
- * @copyright     2022 Heiko Wilknitz
+ * @copyright     2026 Heiko Wilknitz
  * @link          https://wilkware.de
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  *
@@ -229,7 +229,7 @@ trait MagicHelper
      *
      * @var int[]
      */
-    public const MAGIC_HOME_SWITCHES = [0x19, 0x93, 0x0B, 0x93, 0x94, 0x95, 0x96, 0x97];
+    public const MAGIC_HOME_SWITCHES = [0x0B, 0x19, 0x93, 0x94, 0x95, 0x96, 0x97];
 }
 
 /**
@@ -303,18 +303,18 @@ abstract class ProtocolBase
     public function ConstructCustomEffect(array $rgblist, int $speed, string $transtype): array
     {
         $msg = [];
-        $lead_byte = 0x00;
-        $first_color = true;
+        $leadByte = 0x00;
+        $firstColor = true;
         foreach ($rgblist as $rgb) {
-            if ($first_color) {
-                $lead_byte = 0x51;
-                $first_color = false;
+            if ($firstColor) {
+                $leadByte = 0x51;
+                $firstColor = false;
             } else {
-                $lead_byte = 0;
+                $leadByte = 0;
             }
             [$r, $g, $b] = $rgb;
 
-            $msg[] = $lead_byte;
+            $msg[] = $leadByte;
             $msg[] = $r;
             $msg[] = $g;
             $msg[] = $b;
@@ -331,7 +331,7 @@ abstract class ProtocolBase
         }
         $msg[] = 0x00;
         $msg[] = self::SpeedToDelay($speed);
-        $msg[] = self::TRANSITION_BYTES[$transtype] ?? self::TRANSITION_BYTES[self::TRANSITION_GRADUAL]; # default to "gradual"
+        $msg[] = self::TRANSITION_BYTES[$transtype] ?? self::TRANSITION_BYTES[self::TRANSITION_GRADUAL]; // default to "gradual"
         $msg[] = 0xFF;
         $msg[] = 0x0F;
         return $this->ConstructMessage($msg);
@@ -403,11 +403,11 @@ abstract class ProtocolBase
      */
     public static function SpeedToDelay(int $speed): int
     {
-        # speed is 0-100, delay is 1-31
+        // speed is 0-100, delay is 1-31
         $speed = max(0, min(100, $speed));
-        $inv_speed = 100 - $speed;
-        $delay = intval(($inv_speed * (0x1F - 1)) / 100);
-        # translate from 0-30 to 1-31
+        $invSpeed = 100 - $speed;
+        $delay = intval(($invSpeed * (0x1F - 1)) / 100);
+        // translate from 0-30 to 1-31
         $delay = $delay + 1;
         return $delay;
     }
@@ -421,12 +421,12 @@ abstract class ProtocolBase
      */
     public static function DelayToSpeed(int $delay): int
     {
-        # speed is 0-100, delay is 1-31
-        # 1st translate delay to 0-30
+        // speed is 0-100, delay is 1-31
+        // 1st translate delay to 0-30
         $delay = $delay - 1;
         $delay = max(0, min(0x1F - 1, $delay));
-        $inv_speed = intval(($delay * 100) / (0x1F - 1));
-        $speed = 100 - $inv_speed;
+        $invSpeed = intval(($delay * 100) / (0x1F - 1));
+        $speed = 100 - $invSpeed;
         return $speed;
     }
 
@@ -1128,8 +1128,8 @@ class ProtocolLEDENETAddressableA2 extends ProtocolLEDENET9Byte
      */
     public function ConstructLevelsChange(bool $persist, int $red, int $green, int $blue, int $warmwhite, int $coolwhite, int $writemode): array
     {
-        $preset_number = 0x01;  # aka fixed color
-        $msg = [0x41, $preset_number, $red, $green, $blue, 0x00, 0x00, 0x00, 0x60, 0xFF, 0x00, 0x00];
+        $presetNumber = 0x01; // aka fixed color
+        $msg = [0x41, $presetNumber, $red, $green, $blue, 0x00, 0x00, 0x00, 0x60, 0xFF, 0x00, 0x00];
         return $this->ConstructMessage($msg);
     }
 
@@ -1225,12 +1225,12 @@ class ProtocolLEDENETAddressableA3 extends ProtocolLEDENET9Byte
      */
     public function ConstructLevelsChange(bool $persist, int $red, int $green, int $blue, int $warmwhite, int $coolwhite, int $writemode): array
     {
-        $counter_byte = $this->IncrementCounter();
-        $preset_number = 0x01;  # aka fixed color
-        $msg = [0x41, $preset_number, $red, $green, $blue, 0x00, 0x00, 0x00, 0x06, 0x01, 0x00, 0x00];
-        $inner_message = $this->ConstructMessage($msg);
-        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counter_byte, 0x00, 0x0D]);
-        $msg = array_merge($msg, $inner_message);
+        $counterByte = $this->IncrementCounter();
+        $presetNumber = 0x01; // aka fixed color
+        $msg = [0x41, $presetNumber, $red, $green, $blue, 0x00, 0x00, 0x00, 0x06, 0x01, 0x00, 0x00];
+        $innerMessage = $this->ConstructMessage($msg);
+        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counterByte, 0x00, 0x0D]);
+        $msg = array_merge($msg, $innerMessage);
         return $this->ConstructMessage($msg);
     }
 
@@ -1245,8 +1245,8 @@ class ProtocolLEDENETAddressableA3 extends ProtocolLEDENET9Byte
      */
     public function ConstructPresetPattern(int $pattern, int $speed, int $brightness): array
     {
-        $counter_byte = $this->IncrementCounter();
-        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counter_byte, 0x00, 0x05, 0x42, $pattern, $speed, $brightness, 0x00]);
+        $counterByte = $this->IncrementCounter();
+        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counterByte, 0x00, 0x05, 0x42, $pattern, $speed, $brightness, 0x00]);
         return $this->ConstructMessage($msg);
     }
 }
@@ -1257,7 +1257,7 @@ class ProtocolLEDENETAddressableA3 extends ProtocolLEDENET9Byte
 class ProtocolLEDENETCCT extends ProtocolLEDENET9Byte
 {
     /** Minimum brightness value accepted by the device. */
-    private int $MIN_BRIGHTNESS = 2;
+    private const MIN_BRIGHTNESS = 2;
 
     /**
      * The id of the protocol.
@@ -1297,16 +1297,16 @@ class ProtocolLEDENETCCT extends ProtocolLEDENET9Byte
      */
     public function ConstructLevelsChange(bool $persist, int $red, int $green, int $blue, int $warmwhite, int $coolwhite, int $writemode): array
     {
-        $counter_byte = $this->IncrementCounter();
+        $counterByte = $this->IncrementCounter();
         $tb = $this->WhiteLevelsToScaledColorTemp($warmwhite, $coolwhite);
-        $scaled_temp = $tb[0];
+        $scaledTemp = $tb[0];
         $brightness = $tb[1];
-        # If the brightness goes below the precision the device
-        # will flip from cold to warm
-        $msg = [0x35, 0xB1, $scaled_temp, max($this->MIN_BRIGHTNESS, $brightness), 0x00, 0x00, 0x00, 0x03];
-        $inner_message = $this->ConstructMessage($msg);
-        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counter_byte, 0x00, 0x09]);
-        $msg = array_merge($msg, $inner_message);
+        // If the brightness goes below the precision the device
+        // will flip from cold to warm
+        $msg = [0x35, 0xB1, $scaledTemp, max(self::MIN_BRIGHTNESS, $brightness), 0x00, 0x00, 0x00, 0x03];
+        $innerMessage = $this->ConstructMessage($msg);
+        $msg = array_merge($this->ADDRESSABLE_HEADER, [$counterByte, 0x00, 0x09]);
+        $msg = array_merge($msg, $innerMessage);
         return $this->ConstructMessage($msg);
     }
 }
