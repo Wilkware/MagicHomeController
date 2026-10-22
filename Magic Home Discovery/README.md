@@ -74,13 +74,19 @@ v4.0.20261021
 
 * _NEU_: Kompatibilität auf Symcon 8.1 hoch gesetzt
 * _FIX_: Gerätesuche robuster gegenüber unvollständigen Antworten und unbekannten Typen
+* _FIX_: Mehrere Instanzen mit gleicher MAC-Adresse werden alle im Konfigurator angezeigt
 * _FIX_: Konfigurationsformular vereinheitlicht
 * _FIX_: Übersetzungen nachgezogen
 * _FIX_: Dokumentation überarbeitet
 
 v3.0.20221231
 
-* _NEU_: Initialversion
+* _NEU_: Discovery Modul zur Bibliothek hinzugefügt (erstmals mit Version 3.0 enthalten)
+* _NEU_: Suche der Controller im lokalen Netzwerk per UDP-Broadcast
+* _NEU_: Erkennen von 27 verschiedenen Controller-Typen
+* _NEU_: Anlegen von Controller-Instanzen inkl. vorbelegter Konfiguration (IP, MAC, Modell, Typ)
+* _NEU_: Zuordnung bereits vorhandener Instanzen über die MAC-Adresse
+* _NEU_: Zielkategorie für neue Instanzen (nur Symcon 6.x)
 
 ## Entwickler
 

@@ -99,10 +99,10 @@ class MagicHomeDiscovery extends IPSModuleStrict
             $element['caption'] = sprintf('v%s.%d', $lib['Version'], $lib['Build']);
         });
 
-        // All installed devices
+        // All installed devices (several instances may share the same MAC)
         $installed = [];
         foreach (IPS_GetInstanceListByModuleID(self::MODUL_CONTROLLER_ID) as $instance) {
-            $installed[IPS_GetProperty($instance, 'MAC')] = $instance;
+            $installed[IPS_GetProperty($instance, 'MAC')][] = $instance;
         }
 
         // Discover controllers
@@ -131,28 +131,28 @@ class MagicHomeDiscovery extends IPSModuleStrict
                         ],
                     ],
                 ];
-                if (isset($installed[$controller['mac']])) {
-                    $value['instanceID'] = $installed[$controller['mac']];
-                    // remove it from the list
-                    unset($installed[$controller['mac']]);
+                if (!empty($installed[$controller['mac']])) {
+                    $value['instanceID'] = array_shift($installed[$controller['mac']]);
                 } else {
                     $value['instanceID'] = 0;
                 }
                 $values[] = $value;
             }
         }
-        foreach ($installed as $mac => $instance) {
-            // However, if an controller is not a discovered device
-            $values[] = [
-                'macid'         => $mac,
-                'tcpip'         => IPS_GetProperty($instance, 'TCPIP'),
-                'model'         => IPS_GetProperty($instance, 'MODEL'),
-                'type'          => self::MAGIC_HOME_CONTROLLER[IPS_GetProperty($instance, 'TYPE')][0] ?? 'Unknown',
-                'info'          => '',
-                'version'       => ' - ',
-                'firmware'      => ' - ',
-                'instanceID'    => $instance,
-            ];
+        foreach ($installed as $mac => $instances) {
+            // However, if an controller is not a discovered device (or a duplicate MAC)
+            foreach ($instances as $instance) {
+                $values[] = [
+                    'macid'         => (string) $mac,
+                    'tcpip'         => IPS_GetProperty($instance, 'TCPIP'),
+                    'model'         => IPS_GetProperty($instance, 'MODEL'),
+                    'type'          => self::MAGIC_HOME_CONTROLLER[IPS_GetProperty($instance, 'TYPE')][0] ?? 'Unknown',
+                    'info'          => '',
+                    'version'       => ' - ',
+                    'firmware'      => ' - ',
+                    'instanceID'    => $instance,
+                ];
+            }
         }
         // Set available values
         $this->ModifyFormElement($form['actions'], 'Configurator', function (array &$element) use ($values): void
